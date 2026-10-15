@@ -1,0 +1,42 @@
+#!/usr/bin/expect -f
+# Answers chezmoi's first-run questions (.chezmoi.toml.tmpl) like a person would: types the
+# profile, name, email and enterprise host, and presses Enter on every yes/no to take its default.
+# Usage: init.exp <profile> <name> <email> <enterprise host> <command…>
+# The command is what asks the questions: `chezmoi init …` on the host, `ssh -tt … <bootstrap>` in a VM.
+lassign $argv profile name email host
+set timeout 60
+log_user 0
+if {[info exists env(INIT_EXP_LOG)]} { log_file -noappend $env(INIT_EXP_LOG) }
+eval spawn [lrange $argv 4 end]
+
+# The prompt UI asks the terminal for its background colour and waits for the reply; answer like a
+# real terminal (its cursor-position query must stay unanswered, or chezmoi quits).
+expect_before {
+  -ex "\x1b]11;?" { send "\x1b]11;rgb:0000/0000/0000\x1b\\"; exp_continue }
+  timeout { puts stderr "init.exp: timed out waiting for a prompt"; exit 1 }
+  eof { puts stderr "init.exp: command ended before all prompts were answered"; exit 1 }
+}
+
+# Wait for the prompt's input field (it turns on bracketed paste) before typing: keys sent earlier
+# reach the terminal before the field reads them, and the Enter gets lost.
+proc answer {prompt reply} {
+  expect $prompt
+  expect -ex "\x1b\[?2004h"
+  send "$reply\r"
+}
+answer "Machine profile" $profile
+answer "Git name" $name
+answer "Git email" $email
+answer "Install GUI apps" ""
+answer "Install personal apps" ""
+answer "Install Mac App Store apps" ""
+answer "Log gh in to a GitHub Enterprise host" ""
+if {$profile eq "work"} { answer "GitHub Enterprise host" $host }
+answer "CrowdStrike" ""
+
+# Anything after the prompts (e.g. the rest of a bootstrap) runs untimed.
+expect_before
+set timeout -1
+expect eof
+catch wait result
+exit [lindex $result 3]

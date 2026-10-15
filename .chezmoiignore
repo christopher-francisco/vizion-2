@@ -6,6 +6,8 @@ docs/**
 install.sh
 linked
 linked/**
+test
+test/**
 
 # Written by oh-my-zsh at runtime; `exact = true` on the external would delete it otherwise.
 .oh-my-zsh/cache/**

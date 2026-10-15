@@ -1,0 +1,21 @@
+# Keep using the clone this machine was initialised from (e.g. `chezmoi init --source ~/Developer/code/vizion-2`).
+
+[data]
+  profile = "personal"
+  name = "Test User"
+  email = "test@example.com"
+  [data.groups]
+    core = true
+    dev = true
+    gui = true
+    personal = true
+    mas = true
+    enterprise = false
+  [data.github]
+    enterpriseHost = ""
+  [data.machine]
+    crowdstrike = false
+
+[git]
+  autoCommit = true
+  autoPush = true

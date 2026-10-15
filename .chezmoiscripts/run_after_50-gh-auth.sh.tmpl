@@ -8,7 +8,8 @@
 # skipped or failed login is offered again; the check is local (no network) and the apply never fails.
 set -euo pipefail
 
-eval "$(/opt/homebrew/bin/brew shellenv)"
+# Homebrew's gh, unless one is already on PATH (the tests put a stub there).
+command -v gh >/dev/null || eval "$(/opt/homebrew/bin/brew shellenv)"
 
 # Ignore token env vars: only a stored login survives a new shell.
 no_env_token() {

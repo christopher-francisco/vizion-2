@@ -79,6 +79,10 @@ The clone's path is saved as `sourceDir`, so chezmoi keeps using it.
 - **A language runtime:** add it to `dot_tool-versions`.
 - **Machine-specific shell lines:** put them in `~/.zshrc.aliases.local` (not managed).
 
+## Testing
+
+`test/run.sh --host-only` checks both profiles on this Mac in about 15 seconds, without touching `$HOME`. It answers the first-run questions, renders every file and script, checks the Brewfile names exist, and runs the gh-login and push-token scripts against stubs. Results land in `test/out/`. A change to the config, the managed files or the Brewfile shows up as a snapshot diff: if it's intended, run `test/run.sh --host-only --update` and commit the new `test/expected/` files with it. Clean-VM runs are coming (`docs/requirements/0.1.0_TEST_SUITE.md`).
+
 ## Work laptop
 
 The work laptop uses the company email and the enterprise GitHub host, and doesn't log in to the personal GitHub account. It pulls this repo without credentials (it's public). To push, it uses a token that can only write to this repo, stored in its own Keychain item; `~/.gitconfig` hands it to git for this repo's URL only. Auto-commit and auto-push are off: commit and push by hand from `chezmoi cd`.

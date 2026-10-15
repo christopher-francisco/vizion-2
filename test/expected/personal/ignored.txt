@@ -1,0 +1,6 @@
+.oh-my-zsh/cache
+CLAUDE.md
+README.md
+docs
+linked
+test

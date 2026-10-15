@@ -1,0 +1,22 @@
+#!/bin/bash
+# Stub macOS `security` for the script tests: a "Keychain" of one file per service in $STUB_KEYCHAIN.
+# add-generic-password with a trailing -w asks for the password twice, like the real one.
+cmd=$1
+shift
+service=
+while [ $# -gt 0 ]; do
+  case $1 in
+    -s) service=$2; shift 2 ;;
+    -a) shift 2 ;;
+    *) shift ;;
+  esac
+done
+case $cmd in
+  find-generic-password) [ -f "$STUB_KEYCHAIN/$service" ] ;;
+  add-generic-password)
+    read -r -s -p "password data for new item: " first; echo
+    read -r -s -p "retype password for new item: " second; echo
+    if [ "$first" != "$second" ]; then echo "security: passwords don't match" >&2; exit 1; fi
+    printf '%s' "$first" > "$STUB_KEYCHAIN/$service" ;;
+  *) exit 2 ;;
+esac

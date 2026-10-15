@@ -1,0 +1,26 @@
+#!/usr/bin/expect -f
+# Runs a command on a terminal and answers it: tty.exp [<pattern> <reply>]… --run <command…>
+# Each reply is sent (plus Enter) once its pattern shows up, in order. Prints everything the command
+# wrote, and exits with its exit code; 99 if a pattern never shows up.
+set timeout 10
+set pairs {}
+while {[llength $argv] && [lindex $argv 0] ne "--run"} {
+  lappend pairs [lindex $argv 0] [lindex $argv 1]
+  set argv [lrange $argv 2 end]
+}
+eval spawn -noecho [lrange $argv 1 end]
+foreach {pattern reply} $pairs {
+  expect {
+    -ex $pattern { send -- "$reply\r" }
+    timeout { puts "\ntty.exp: no \"$pattern\""; exit 99 }
+    eof { puts "\ntty.exp: ended before \"$pattern\""; exit 99 }
+  }
+}
+# After the last answer the command must finish on its own; one still waiting for input fails (98).
+set timeout 30
+expect {
+  eof {}
+  timeout { puts "\ntty.exp: still running after the last answer"; close; wait; exit 98 }
+}
+catch wait result
+exit [lindex $result 3]

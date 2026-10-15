@@ -1,0 +1,108 @@
+.chezmoiscripts/00-prereqs.sh
+.chezmoiscripts/10-brew.sh
+.chezmoiscripts/20-runtimes.sh
+.chezmoiscripts/25-vscode-extensions.sh
+.chezmoiscripts/30-macos.sh
+.chezmoiscripts/40-plugins.sh
+.chezmoiscripts/50-gh-auth.sh
+.chezmoiscripts/55-work-push-token.sh
+.config
+.config/git
+.config/git/ignore
+.config/karabiner
+.config/nvim
+.config/nvim-legacy
+.config/nvim-legacy/init.lua
+.config/nvim-legacy/lazy-lock.json
+.config/nvim-legacy/lua
+.config/nvim-legacy/lua/colorschemes
+.config/nvim-legacy/lua/colorschemes/everforest.lua
+.config/nvim-legacy/lua/colorschemes/tokyonight.lua
+.config/nvim-legacy/lua/config
+.config/nvim-legacy/lua/config/autocmds.lua
+.config/nvim-legacy/lua/config/init.lua
+.config/nvim-legacy/lua/config/keymaps.lua
+.config/nvim-legacy/lua/config/options.lua
+.config/nvim-legacy/lua/config/plugins.lua
+.config/nvim-legacy/lua/plugins
+.config/nvim-legacy/lua/plugins/autocompletion.lua
+.config/nvim-legacy/lua/plugins/coding.lua
+.config/nvim-legacy/lua/plugins/colorscheme.lua
+.config/nvim-legacy/lua/plugins/debugging.lua
+.config/nvim-legacy/lua/plugins/files.lua
+.config/nvim-legacy/lua/plugins/formatting.lua
+.config/nvim-legacy/lua/plugins/integration.lua
+.config/nvim-legacy/lua/plugins/linting.lua
+.config/nvim-legacy/lua/plugins/lsp.lua
+.config/nvim-legacy/lua/plugins/navigation.lua
+.config/nvim-legacy/lua/plugins/snippets.lua
+.config/nvim-legacy/lua/plugins/treesitter.lua
+.config/nvim-legacy/lua/plugins/ui.lua
+.config/nvim-legacy/lua/utils
+.config/nvim-legacy/lua/utils/art.lua
+.config/nvim-legacy/lua/utils/buffers.lua
+.config/nvim-legacy/lua/utils/colorscheme.lua
+.config/nvim-legacy/lua/utils/columnstatus.lua
+.config/nvim-legacy/lua/utils/sessions.lua
+.config/nvim/.gitignore
+.config/nvim/.neoconf.json
+.config/nvim/LICENSE
+.config/nvim/README.md
+.config/nvim/init.lua
+.config/nvim/lazy-lock.json
+.config/nvim/lazyvim.json
+.config/nvim/lua
+.config/nvim/lua/config
+.config/nvim/lua/config/autocmds.lua
+.config/nvim/lua/config/keymaps.lua
+.config/nvim/lua/config/lazy.lua
+.config/nvim/lua/config/options.lua
+.config/nvim/lua/plugins
+.config/nvim/lua/plugins/coding.lua
+.config/nvim/lua/plugins/editor.lua
+.config/nvim/lua/plugins/example.lua
+.config/nvim/lua/plugins/integration.lua
+.config/nvim/lua/plugins/lsp.lua
+.config/nvim/lua/plugins/treesitter.lua
+.config/nvim/lua/plugins/ui.lua
+.config/nvim/stylua.toml
+.config/tmux
+.config/tmux/components
+.config/tmux/components/clean.tmux.conf
+.config/tmux/components/components
+.config/tmux/components/components/battery.sh
+.config/tmux/components/components/windows.sh
+.config/tmux/components/slanted.tmux.conf
+.config/tmux/themes
+.config/tmux/themes/everforest-dark.tmux.conf
+.config/tmux/themes/everforest-light.tmux.conf
+.config/tmux/themes/everforest.tmux.conf
+.config/tmux/themes/minimal.tmux.conf
+.config/tmux/themes/reiji-s2.tmux.conf
+.config/tmux/themes/rigel.tmux.conf
+.config/tmux/themes/simple.tmux.conf
+.config/tmux/themes/tokyonight-night.tmux.conf
+.config/tmux/tmux.conf
+.gitconfig
+.hushlogin
+.tool-versions
+.zprofile
+.zshenv
+.zshrc
+.zshrc.aliases
+Library
+Library/Application Support
+Library/Application Support/Code
+Library/Application Support/Code/User
+Library/Application Support/Code/User/keybindings.json
+Library/Application Support/Code/User/settings.json
+Library/Application Support/iTerm2
+Library/Application Support/iTerm2/DynamicProfiles
+Library/Application Support/iTerm2/DynamicProfiles/00-base.json
+Library/Application Support/iTerm2/DynamicProfiles/catppuccin.json
+Library/Application Support/iTerm2/DynamicProfiles/cyberdream.json
+Library/Application Support/iTerm2/DynamicProfiles/everforest.json
+Library/Application Support/iTerm2/DynamicProfiles/one-dark.json
+Library/Application Support/iTerm2/DynamicProfiles/rigel.json
+Library/Application Support/iTerm2/DynamicProfiles/solarized.json
+Library/Application Support/iTerm2/DynamicProfiles/tokyonight.json

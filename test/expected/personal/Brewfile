@@ -1,0 +1,38 @@
+# groups: core, dev, gui, mas, personal
+brew "bat"
+brew "bat-extras"
+brew "fd"
+brew "fzf"
+brew "gawk"
+brew "gh"
+brew "git-delta"
+brew "git-lfs"
+brew "gnu-sed"
+brew "jq"
+brew "lazygit"
+brew "neovim"
+brew "reattach-to-user-namespace"
+brew "ripgrep"
+brew "tmux"
+brew "tree"
+brew "tree-sitter-cli"
+brew "wget"
+brew "zsh-autosuggestions"
+brew "zsh-completions"
+brew "zsh-syntax-highlighting"
+brew "asdf"
+brew "mas"
+cask "iterm2"
+cask "visual-studio-code"
+cask "karabiner-elements"
+cask "the-unarchiver"
+cask "font-intone-mono-nerd-font"
+cask "font-meslo-lg-nerd-font"
+cask "font-fira-code-nerd-font"
+cask "1password"
+cask "spotify"
+mas "Boop", id: 1518425043
+mas "Desk Remote Control", id: 1509037746
+mas "Magnet", id: 441258766
+mas "Things 3", id: 904280696
+mas "Xcode", id: 497799835

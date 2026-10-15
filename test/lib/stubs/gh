@@ -1,0 +1,12 @@
+#!/bin/bash
+# Stub gh for the script tests. Appends each call to $STUB_LOG, with the token env vars it saw.
+# Logged-in hosts: $STUB_GH_LOGGED_IN (space-separated). `auth login` exits with $STUB_GH_LOGIN_RC.
+tokens=$(env | grep -oE '^(GITHUB_TOKEN|GH_TOKEN|GH_ENTERPRISE_TOKEN|GITHUB_ENTERPRISE_TOKEN)=' | tr -d '=' | tr '\n' ' ')
+echo "gh $* [env: ${tokens:-none}]" >> "$STUB_LOG"
+host=
+for ((i = 1; i <= $#; i++)); do [ "${!i}" = --hostname ] && j=$((i + 1)) && host=${!j}; done
+case "$1 $2" in
+  "auth token") [[ " ${STUB_GH_LOGGED_IN:-} " == *" $host "* ]] && echo gho_stub || exit 1 ;;
+  "auth login") exit "${STUB_GH_LOGIN_RC:-0}" ;;
+  *) exit 2 ;;
+esac
