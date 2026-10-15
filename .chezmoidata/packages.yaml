@@ -2,8 +2,7 @@
 # ~/.config/chezmoi/chezmoi.toml. Rendered into a Brewfile by .chezmoiscripts/run_onchange_before_10-brew.sh.tmpl.
 packages:
   core:
-    taps: [eth-p/software]
-    brews: [bat, eth-p/software/bat-extras, fd, fzf, gawk, gh, git-delta, git-lfs, gnu-sed, jq, lazygit, neovim,
+    brews: [bat, bat-extras, fd, fzf, gawk, gh, git-delta, git-lfs, gnu-sed, jq, lazygit, neovim,
             reattach-to-user-namespace, ripgrep, tmux, tree, tree-sitter-cli, wget,
             zsh-autosuggestions, zsh-completions, zsh-syntax-highlighting]
   dev:

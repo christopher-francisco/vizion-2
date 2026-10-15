@@ -19,7 +19,7 @@ sourceDir = {{ .chezmoi.sourceDir | quote }}
   [data.github]
     enterpriseHost = {{ if $enterprise }}{{ promptStringOnce . "github.enterpriseHost" "GitHub Enterprise host (e.g. github.example.com)" | quote }}{{ else }}""{{ end }}
   [data.machine]
-    crowdstrike = {{ promptBoolOnce . "machine.crowdstrike" "Is CrowdStrike installed (inline tmux navigator bindings)?" $isWork }}
+    crowdstrike = {{ promptBoolOnce . "machine.crowdstrike" "Is CrowdStrike installed (inline tmux navigator bindings)" $isWork }}
 
 [git]
   autoCommit = {{ not $isWork }}

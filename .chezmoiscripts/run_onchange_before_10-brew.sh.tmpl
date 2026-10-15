@@ -2,6 +2,7 @@
 # Installs the packages of every enabled group with brew bundle. chezmoi re-runs this script
 # whenever the rendered Brewfile below changes (a package added, a group switched on).
 # Deselecting a group uninstalls nothing; run `brew bundle cleanup` by hand for that.
+# Tap formulae and casks (`user/tap/name`) are marked trusted: Homebrew refuses to load them otherwise.
 set -euo pipefail
 
 eval "$(/opt/homebrew/bin/brew shellenv)"
@@ -14,10 +15,10 @@ brew bundle --file=/dev/stdin <<'BREWFILE'
 tap {{ . | quote }}
 {{- end }}{{ end }}
 {{- range $enabled }}{{ range dig "brews" list (index $.packages .) }}
-brew {{ . | quote }}
+brew {{ . | quote }}{{ if contains "/" . }}, trusted: true{{ end }}
 {{- end }}{{ end }}
 {{- range $enabled }}{{ range dig "casks" list (index $.packages .) }}
-cask {{ . | quote }}
+cask {{ . | quote }}{{ if contains "/" . }}, trusted: true{{ end }}
 {{- end }}{{ end }}
 {{- range $enabled }}{{ range $name, $id := dig "apps" dict (index $.packages .) }}
 mas {{ $name | quote }}, id: {{ $id }}
