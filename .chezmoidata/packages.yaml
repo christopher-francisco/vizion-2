@@ -1,0 +1,19 @@
+# Homebrew packages, one list per group. A group is installed when `.groups.<name>` is true in
+# ~/.config/chezmoi/chezmoi.toml. Rendered into a Brewfile by .chezmoiscripts/run_onchange_before_10-brew.sh.tmpl.
+packages:
+  core:
+    taps: [eth-p/software]
+    brews: [bat, eth-p/software/bat-extras, fd, fzf, gawk, gh, git-delta, git-lfs, gnu-sed, jq, lazygit, neovim,
+            reattach-to-user-namespace, ripgrep, tmux, tree, tree-sitter-cli, wget,
+            zsh-autosuggestions, zsh-completions, zsh-syntax-highlighting]
+  dev:
+    brews: [asdf]
+  gui:
+    casks: [iterm2, visual-studio-code, karabiner-elements, the-unarchiver,
+            font-intone-mono-nerd-font, font-meslo-lg-nerd-font, font-fira-code-nerd-font]
+    vscode: []   # extension IDs, installed by run_onchange_after_25-vscode-extensions (board task 18)
+  personal:
+    casks: [1password, spotify]
+  mas:
+    brews: [mas]
+    apps: { Boop: 1518425043, "Desk Remote Control": 1509037746, Magnet: 441258766, "Things 3": 904280696, Xcode: 497799835 }

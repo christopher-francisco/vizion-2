@@ -8,7 +8,7 @@ Statuses: `todo` · `in progress` · `blocked` · `done`
 | 2 | Agree requirements `0.1.0_MACHINE_PROVISIONING.md` and promote the chezmoi design to requirements | done | Both accepted 2026-10-15; design is now `requirements/0.1.0_CHEZMOI_DESIGN.md` |
 | 3 | Decide keep/drop for each vizion item (cleanup table) | done | All decided 2026-10-15; see design "Cleanup" table |
 | 4 | Init git repo and chezmoi source state (`.chezmoi.toml.tmpl` with profile/group prompts, `.chezmoiignore`) | done | Done 2026-10-15; verified with `chezmoi execute-template` + `managed`/`ignored` for both profiles |
-| 5 | Package groups in `.chezmoidata/packages.yaml` + `run_onchange` brew bundle script | todo | |
+| 5 | Package groups in `.chezmoidata/packages.yaml` + `run_onchange` brew bundle script | done | Done 2026-10-15; Brewfile rendered for both profiles, parsed by `brew bundle list`, all formula/cask names verified |
 | 6 | Port Neovim: LazyVim config (branch `lazyvim`) → `dot_config/nvim`, master's config → `dot_config/nvim-legacy` (copied files), each `lazy-lock.json` symlinked from `linked/`, `nvim-legacy` alias | todo | Legacy = `master`'s `nvim/` as-is; `next_nvim/` dropped. Verify lazy.nvim writes through the symlink |
 | 15 | Port remaining dotfiles and `~/.config` directories | todo | Karabiner as a symlinked folder (`linked/karabiner`, ignore `automatic_backups/`); drop vendored tmux plugins and plug.vim; `.zshrc.aliases` merge per design "Shell" section; chezmoi-managed `~/.tool-versions` |
 | 7 | Externals: oh-my-zsh, TPM | todo | |

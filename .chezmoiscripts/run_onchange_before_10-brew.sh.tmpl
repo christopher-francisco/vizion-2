@@ -1,0 +1,25 @@
+#!/bin/bash
+# Installs the packages of every enabled group with brew bundle. chezmoi re-runs this script
+# whenever the rendered Brewfile below changes (a package added, a group switched on).
+# Deselecting a group uninstalls nothing; run `brew bundle cleanup` by hand for that.
+set -euo pipefail
+
+eval "$(/opt/homebrew/bin/brew shellenv)"
+
+brew bundle --file=/dev/stdin <<'BREWFILE'
+{{- $enabled := list }}
+{{- range $group, $_ := .packages }}{{ if index $.groups $group }}{{ $enabled = append $enabled $group }}{{ end }}{{ end }}
+# groups: {{ join ", " $enabled }}
+{{- range $enabled }}{{ range dig "taps" list (index $.packages .) }}
+tap {{ . | quote }}
+{{- end }}{{ end }}
+{{- range $enabled }}{{ range dig "brews" list (index $.packages .) }}
+brew {{ . | quote }}
+{{- end }}{{ end }}
+{{- range $enabled }}{{ range dig "casks" list (index $.packages .) }}
+cask {{ . | quote }}
+{{- end }}{{ end }}
+{{- range $enabled }}{{ range $name, $id := dig "apps" dict (index $.packages .) }}
+mas {{ $name | quote }}, id: {{ $id }}
+{{- end }}{{ end }}
+BREWFILE
