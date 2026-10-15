@@ -1,0 +1,107 @@
+# Export
+
+# Set the visual editor
+export VISUAL=nvim
+
+# Set the editor for git
+export EDITOR="$VISUAL"
+
+# Local binaries first, so chezmoi, Claude Code and other user-installed tools win
+export PATH="$HOME/.local/bin:$PATH"
+export PATH="${ASDF_DATA_DIR:-$HOME/.asdf}/shims:$PATH"
+
+# Enable true colors and italic.
+export TERM=xterm-256color-italic
+
+# We want oh-my-zsh to show `~` when on the home folder
+export DEFAULT_USER=`whoami`
+
+# ZFZ uses rg
+export FZF_DEFAULT_COMMAND='rg --files --hidden --glob "!{.git,node_modules}"'
+
+# bat theme
+export BAT_THEME="TwoDark"
+
+# Navigation
+alias code:home='cd ~/Developer/code'
+
+alias vizion='chezmoi cd'
+
+# CLI tools
+alias ssh='TERM=xterm-256color ssh'
+alias v='nvim .'
+alias vs='nvim $(fzf)'
+alias nvs='nvim $(fzf)'
+
+alias nvim-legacy='NVIM_APPNAME=nvim-legacy nvim'
+
+# Quick alises
+alias gccount='git rev-list --count develop..' # commits count between current branch and develop
+
+alias dnav='git config --global delta.navigate true'
+alias dnonav='git config --global delta.navigate false'
+alias dvsp='git config --global delta.side-by-side true'
+alias dsp='git config --global delta.side-by-side false'
+
+gitPrUrl() {
+    gh pr view --json url --jq .url
+}
+gitPrOpen() {
+    gh pr view --web
+}
+alias git:pr:url=gitPrUrl
+alias git:pr:open=gitPrOpen
+
+printColors() {
+    for i in {0..255}; do printf "\x1b[38;5;${i}mcolor%-5i\x1b[0m" $i ; if ! (( ($i + 1 ) % 8 )); then echo ; fi ; done
+}
+printBgColors() {
+    for i in {0..255}; do printf "\x1b[48;5;${i}m     %-5i\x1b[0m" $i ; if ! (( ($i + 1 ) % 8 )); then echo ; fi ; done
+}
+
+zshPlugins() {
+  if [[ `uname -m` == 'arm64' ]]; then
+    local location="/opt/homebrew"
+  else
+    local location="/usr/local"
+  fi
+
+  source "$location/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
+  source "$location/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
+
+  source <(fzf --zsh)
+}
+zshPlugins
+
+
+bindkey '^ ' autosuggest-accept
+
+# Misc
+catp() {
+    cat package.json | grep $1
+}
+
+s() {
+  rg $1 package.json
+}
+
+createEditorConfig() {
+  ls .editorconfig > /dev/null 2>&1
+  if [ $? != 0 ]; then
+    echo "root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+indent_style = space
+indent_size = 2" >> .editorconfig
+  else
+    echo ".editorconfig file found. Nothing was changed."
+  fi
+}
+
+if [[ ! -e ~/.zshrc.aliases.local ]]; then
+  touch ~/.zshrc.aliases.local
+fi
+
+. ~/.zshrc.aliases.local

@@ -1,0 +1,94 @@
+# Prefix set to C-a
+unbind C-b
+set -g prefix 'C-a'
+bind-key 'C-a' send-prefix
+
+set -g mode-keys vi
+
+# Introduce these vim-only keys to work on copy-mode
+bind-key -T copy-mode-vi v send-keys -X begin-selection
+bind-key -T copy-mode-vi y send-keys -X copy-selection
+bind-key -T copy-mode-vi r send-keys -X rectangle-toggle
+
+bind r source-file ~/.config/tmux/tmux.conf
+
+# Fixes an issue with tmux 3.5a and tmux-sensible where the shell doesn't load zshrc
+set -g default-command "reattach-to-user-namespace $SHELL"
+
+# Create a new window
+bind N new-window
+
+# Hotkey to sync all the panes of the current window
+bind C-s setw synchronize-panes
+
+# Don't rename windows automatically
+set -g allow-rename off
+
+# Refresh interval
+set -g status-interval 5
+
+# Allow mouse to scroll
+set -g mouse on
+
+# About Vim being super slow 
+# @see https://github.com/tmux/tmux/issues/353
+# Stops tmux for waiting too long on the Escape key
+set -s escape-time 10
+
+# We want tmux to support 256 colors and allow itallics
+set -g default-terminal 'tmux-256color'
+set -as terminal-overrides ',xterm*:Tc:sitm=\E[3m'
+
+set -g monitor-bell off
+set -g status-interval 1
+
+# tmux-prefix-highlight
+set -g @prefix_highlight_show_copy_mode 'on'
+set -g @prefix_highlight_prefix_prompt 'Prefix'
+set -g @prefix_highlight_copy_prompt 'Copy'
+
+# tmux-better-mouse-mode
+set -g @scroll-speed-num-lines-per-scroll "1"
+set -g @scroll-down-exit-copy-mode "off"
+
+# tmux-yank
+
+# stop scrolling to the bottom after yanking
+set -g @yank_action 'copy-pipe'
+
+{{ if .machine.crowdstrike -}}
+# CrowdStrike flags vim-tmux-navigator's `ps` scan; inline its bindings with a per-pane check instead.
+# @see: https://github.com/christoomey/vim-tmux-navigator/issues/428#issuecomment-2629247163
+is_vim="ps -o tty= -o state= -o comm= | grep -iqE '^#{s|/dev/||:pane_tty} +[^TXZ ]+ +(\\S+\\/)?g?(view|l?n?vim?x?|fzf)(diff)?$'"
+bind-key -n 'C-h' if-shell "$is_vim" 'send-keys C-h' 'select-pane -L'
+bind-key -n 'C-j' if-shell "$is_vim" 'send-keys C-j' 'select-pane -D'
+bind-key -n 'C-k' if-shell "$is_vim" 'send-keys C-k' 'select-pane -U'
+bind-key -n 'C-l' if-shell "$is_vim" 'send-keys C-l' 'select-pane -R'
+bind-key -n 'C-\' if-shell "$is_vim" 'send-keys C-\\' 'select-pane -l'
+bind-key -T copy-mode-vi 'C-h' select-pane -L
+bind-key -T copy-mode-vi 'C-j' select-pane -D
+bind-key -T copy-mode-vi 'C-k' select-pane -U
+bind-key -T copy-mode-vi 'C-l' select-pane -R
+bind-key -T copy-mode-vi 'C-\' select-pane -l
+{{- else -}}
+set -g @plugin 'christoomey/vim-tmux-navigator'
+{{- end }}
+
+# Source the theme
+# source "~/.config/tmux/themes/everforest.tmux.conf"
+source "~/.config/tmux/themes/tokyonight-night.tmux.conf"
+source "~/.config/tmux/components/clean.tmux.conf"
+source "~/.config/tmux/themes/minimal.tmux.conf"
+
+# List of plugins
+set -g @plugin 'tmux-plugins/tpm'
+set -g @plugin 'tmux-plugins/tmux-sessionist'
+set -g @plugin 'tmux-plugins/tmux-sensible'
+set -g @plugin 'tmux-plugins/tmux-yank'
+set -g @plugin 'tmux-plugins/tmux-copycat'
+set -g @plugin 'tmux-plugins/tmux-open'
+set -g @plugin 'tmux-plugins/tmux-pain-control'
+set -g @plugin 'nhdaly/tmux-better-mouse-mode'
+
+# Initialize TMUX plugin manager (keep this line at the very bottom of tmux.conf)
+run '~/.config/tmux/plugins/tpm/tpm'
