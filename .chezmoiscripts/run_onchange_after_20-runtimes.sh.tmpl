@@ -1,0 +1,17 @@
+{{ if .groups.dev -}}
+#!/bin/bash
+# Installs the asdf plugins and runtimes pinned in ~/.tool-versions. chezmoi re-runs this
+# script whenever that file changes (hash below).
+# ~/.tool-versions: {{ include "dot_tool-versions" | sha256sum }}
+set -euo pipefail
+
+eval "$(/opt/homebrew/bin/brew shellenv)"
+cd ~
+
+while read -r plugin _; do
+  [[ -z "$plugin" || "$plugin" == \#* ]] && continue
+  asdf plugin list 2>/dev/null | grep -qx "$plugin" || asdf plugin add "$plugin"
+done < .tool-versions
+
+asdf install
+{{ end -}}

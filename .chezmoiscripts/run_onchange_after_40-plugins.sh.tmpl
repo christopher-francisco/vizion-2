@@ -1,0 +1,64 @@
+#!/bin/bash
+# Restores tmux plugins (TPM), Neovim plugins for both configs (lazy.nvim, from each
+# lazy-lock.json) and LazyVim's Mason tools. chezmoi re-runs this script whenever one of the
+# files hashed below changes, e.g. after `chezmoi update` pulls a lock file updated elsewhere.
+# tmux.conf: {{ include "dot_config/tmux/tmux.conf.tmpl" | sha256sum }}
+# nvim lock: {{ include "linked/nvim/lazy-lock.json" | sha256sum }}
+# nvim extras: {{ include "dot_config/nvim/lazyvim.json" | sha256sum }}
+# nvim-legacy lock: {{ include "linked/nvim-legacy/lazy-lock.json" | sha256sum }}
+set -euo pipefail
+
+eval "$(/opt/homebrew/bin/brew shellenv)"
+# Mason's npm-based servers need node from asdf
+export PATH="${ASDF_DATA_DIR:-$HOME/.asdf}/shims:$PATH"
+
+# TPM asks a running tmux server for its plugin dir. Give it a private, throwaway server (TMUX
+# unset, own socket dir) so this never touches the user's sessions, even when run inside tmux.
+tpm_tmpdir=$(mktemp -d)
+(
+  unset TMUX
+  export TMUX_TMPDIR="$tpm_tmpdir"
+  # The plugins are public. Without this, TPM's https://git::@github.com URLs make git store a
+  # junk github.com credential in the Keychain, and that store can hang.
+  export GIT_TERMINAL_PROMPT=0 GIT_CONFIG_COUNT=1 GIT_CONFIG_KEY_0=credential.helper GIT_CONFIG_VALUE_0=
+  trap 'tmux kill-server 2>/dev/null || true' EXIT
+  tmux new-session -d -s tpm
+  tmux set-environment -g TMUX_PLUGIN_MANAGER_PATH "$HOME/.config/tmux/plugins/"
+  ~/.config/tmux/plugins/tpm/bin/install_plugins
+)
+rm -rf "$tpm_tmpdir"
+
+# On an empty data dir, lazy.nvim's first start installs some plugins at their latest commit and
+# rewrites lazy-lock.json (a symlink into the repo). Keep the lock, bootstrap, put it back, restore.
+restore_nvim() {
+  local app=$1 lock="${XDG_CONFIG_HOME:-$HOME/.config}/$1/lazy-lock.json" saved
+  saved=$(mktemp)
+  cp "$lock" "$saved"
+  NVIM_APPNAME=$app nvim --headless +qa
+  cat "$saved" > "$lock"
+  NVIM_APPNAME=$app nvim --headless "+Lazy! restore" +qa
+  cmp -s "$saved" "$lock" || echo "warning: $app's lazy-lock.json changed during restore; check \`chezmoi git diff\`" >&2
+  rm -f "$saved"
+}
+restore_nvim nvim
+restore_nvim nvim-legacy
+
+mason_install=$(mktemp -t mason-install)
+trap 'rm -f "$mason_install"' EXIT
+cat > "$mason_install" <<'LUA'
+-- Install LazyVim's Mason tools and LSP servers, then wait until none is still installing.
+require("lazy").load({ plugins = { "mason.nvim", "mason-lspconfig.nvim", "nvim-lspconfig" } })
+local registry = require("mason-registry")
+-- mason-lspconfig skips its ensure_installed in headless mode, so run that step ourselves.
+registry.refresh(function() require("mason-lspconfig.features.ensure_installed")() end)
+local function installing()
+  for _, p in ipairs(registry.get_all_packages()) do
+    if p:is_installing() then return true end
+  end
+  return false
+end
+vim.wait(15000, installing, 200)
+vim.wait(900000, function() return not installing() end, 1000)
+print("Mason: " .. table.concat(registry.get_installed_package_names(), ", "))
+LUA
+nvim --headless -c "luafile $mason_install" +qa
