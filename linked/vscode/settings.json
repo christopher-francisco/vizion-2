@@ -1,0 +1,33 @@
+{
+    "javascript.updateImportsOnFileMove.enabled": "always",
+    "workbench.colorTheme": "Better Solarized Dark",
+    "editor.minimap.enabled": false,
+    "workbench.statusBar.visible": false,
+    "extensions.confirmedUriHandlerExtensionIds": [],
+    "editor.scrollbar.horizontal": "hidden",
+    "editor.scrollbar.vertical": "hidden",
+    "workbench.startupEditor": "newUntitledFile",
+    "editor.renderWhitespace": "none",
+    "workbench.editor.showTabs": "single",
+    "explorer.confirmDragAndDrop": false,
+    "extensions.ignoreRecommendations": true,
+    "[typescriptreact]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[typescript]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[javascript]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "typescript.updateImportsOnFileMove.enabled": "always",
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "workbench.iconTheme": "vscode-icons",
+    "editor.fontSize": 16,
+    
+    "explorer.openEditors.visible": 5,
+    "workbench.sideBar.location": "right",
+    "workbench.layoutControl.enabled": false,
+    "vsicons.presets.jsOfficial": true,
+    "explorer.confirmDelete": false,
+}

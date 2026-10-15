@@ -1,0 +1,10 @@
+{{ if and .groups.gui .packages.gui.vscode -}}
+#!/bin/bash
+# Installs the VS Code extensions listed under packages.gui.vscode in .chezmoidata/packages.yaml.
+# chezmoi re-runs this script whenever that list changes. Removing an ID uninstalls nothing.
+set -euo pipefail
+
+eval "$(/opt/homebrew/bin/brew shellenv)"
+
+code{{ range .packages.gui.vscode }} --install-extension {{ . | quote }}{{ end }}
+{{ end -}}
