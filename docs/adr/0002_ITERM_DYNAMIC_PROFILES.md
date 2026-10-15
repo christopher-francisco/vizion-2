@@ -1,6 +1,6 @@
 # ADR 0002 — iTerm2 profiles as Dynamic Profiles
 
-- **Status:** Accepted (2026-10-15). Where the main plist lives is amended by ADR 0003.
+- **Status:** Accepted (2026-10-15). Where the main plist lives is amended by ADR 0003. "Edit the JSON, not the UI" is superseded by ADR 0004 (rewritable profiles, edited in the UI).
 - **Date:** 2026-10-15
 
 ## Context

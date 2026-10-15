@@ -1,0 +1,223 @@
+{
+  "Profiles" : [
+    {
+      "Name" : "Base",
+      "Guid" : "B45E0000-0000-4000-8000-000000000001",
+      "Tags" : [
+        "base"
+      ],
+      "ASCII Anti Aliased" : true,
+      "ASCII Ligatures" : true,
+      "Ambiguous Double Width" : false,
+      "BM Growl" : true,
+      "Badge Text" : "",
+      "Blinking Cursor" : true,
+      "Bound Hosts" : [],
+      "Character Encoding" : 4,
+      "Close Sessions On End" : true,
+      "Columns" : 100,
+      "Command" : "",
+      "Cursor Type" : 0,
+      "Custom Command" : "No",
+      "Custom Directory" : "No",
+      "Default Bookmark" : "No",
+      "Description" : "Default",
+      "Disable Window Resizing" : true,
+      "Draw Powerline Glyphs" : true,
+      "Flashing Bell" : false,
+      "Has Hotkey" : false,
+      "Icon" : 0,
+      "Idle Code" : 0,
+      "Jobs to Ignore" : [
+        "rlogin",
+        "ssh",
+        "slogin",
+        "telnet"
+      ],
+      "Keyboard Map" : {
+        "0x2a-0x200000" : {
+          "Action" : 12,
+          "Text" : "*"
+        },
+        "0x2b-0x200000" : {
+          "Action" : 12,
+          "Text" : "+"
+        },
+        "0x2d-0x200000" : {
+          "Action" : 12,
+          "Text" : "-"
+        },
+        "0x2e-0x200000" : {
+          "Action" : 12,
+          "Text" : "."
+        },
+        "0x2f-0x200000" : {
+          "Action" : 12,
+          "Text" : "/"
+        },
+        "0x3-0x200000" : {
+          "Action" : 11,
+          "Text" : "0xd"
+        },
+        "0x30-0x200000" : {
+          "Action" : 12,
+          "Text" : "0"
+        },
+        "0x31-0x200000" : {
+          "Action" : 12,
+          "Text" : "1"
+        },
+        "0x32-0x200000" : {
+          "Action" : 12,
+          "Text" : "2"
+        },
+        "0x33-0x200000" : {
+          "Action" : 12,
+          "Text" : "3"
+        },
+        "0x34-0x200000" : {
+          "Action" : 12,
+          "Text" : "4"
+        },
+        "0x35-0x200000" : {
+          "Action" : 12,
+          "Text" : "5"
+        },
+        "0x36-0x200000" : {
+          "Action" : 12,
+          "Text" : "6"
+        },
+        "0x37-0x200000" : {
+          "Action" : 12,
+          "Text" : "7"
+        },
+        "0x38-0x200000" : {
+          "Action" : 12,
+          "Text" : "8"
+        },
+        "0x39-0x200000" : {
+          "Action" : 12,
+          "Text" : "9"
+        },
+        "0x7f-0x100000" : {
+          "Action" : 11,
+          "Text" : "0x15"
+        },
+        "0x7f-0x80000" : {
+          "Action" : 11,
+          "Text" : "0x1b 0x7f"
+        },
+        "0xf702-0x280000" : {
+          "Action" : 10,
+          "Text" : "b"
+        },
+        "0xf703-0x280000" : {
+          "Action" : 10,
+          "Text" : "f"
+        },
+        "0xf728-0x0" : {
+          "Action" : 11,
+          "Text" : "0x4"
+        },
+        "0xf728-0x80000" : {
+          "Action" : 10,
+          "Text" : "d"
+        },
+        "0xf739-0x0" : {
+          "Action" : 13,
+          "Text" : ""
+        }
+      },
+      "Mouse Reporting" : true,
+      "Non-ASCII Anti Aliased" : true,
+      "Option Key Sends" : 2,
+      "Prompt Before Closing 2" : false,
+      "Right Option Key Sends" : 0,
+      "Rows" : 25,
+      "Screen" : -1,
+      "Scrollback Lines" : 1000,
+      "Send Code When Idle" : false,
+      "Show Status Bar" : false,
+      "Silence Bell" : false,
+      "Space" : 0,
+      "Status Bar Layout" : {
+        "advanced configuration" : {
+          "algorithm" : 0,
+          "font" : ".AppleSystemUIFont 12"
+        },
+        "components" : [
+          {
+            "class" : "iTermStatusBarCPUUtilizationComponent",
+            "configuration" : {
+              "knobs" : {
+                "base: compression resistance" : 1,
+                "base: priority" : 5.0,
+                "shared text color" : {
+                  "Alpha Component" : 1.0,
+                  "Blue Component" : 0.63,
+                  "Color Space" : "sRGB",
+                  "Green Component" : 0.63,
+                  "Red Component" : 0.9
+                }
+              },
+              "layout advanced configuration dictionary value" : {
+                "algorithm" : 0
+              }
+            }
+          },
+          {
+            "class" : "iTermStatusBarFixedSpacerComponent",
+            "configuration" : {
+              "knobs" : {
+                "base: compression resistance" : 1,
+                "base: priority" : 5.0,
+                "iTermStatusBarFixedSpacerComponentWidthKnob" : 5,
+                "shared text color" : {
+                  "Alpha Component" : 1.0,
+                  "Blue Component" : 0.63,
+                  "Color Space" : "sRGB",
+                  "Green Component" : 0.9,
+                  "Red Component" : 0.63
+                }
+              },
+              "layout advanced configuration dictionary value" : {
+                "algorithm" : 0
+              }
+            }
+          },
+          {
+            "class" : "iTermStatusBarNetworkUtilizationComponent",
+            "configuration" : {
+              "knobs" : {
+                "base: compression resistance" : 1,
+                "base: priority" : 5.0,
+                "shared text color" : {
+                  "Alpha Component" : 1.0,
+                  "Blue Component" : 0.9,
+                  "Color Space" : "sRGB",
+                  "Green Component" : 0.63,
+                  "Red Component" : 0.63
+                }
+              },
+              "layout advanced configuration dictionary value" : {
+                "algorithm" : 0
+              }
+            }
+          }
+        ]
+      },
+      "Sync Title" : false,
+      "Terminal Type" : "xterm-256color-italic",
+      "Thin Strokes" : 0,
+      "Unicode Normalization" : 0,
+      "Unlimited Scrollback" : false,
+      "Use Bold Font" : true,
+      "Use Bright Bold" : true,
+      "Use Italic Font" : true,
+      "Use Non-ASCII Font" : false,
+      "Visual Bell" : true,
+      "Window Type" : 0,
+      "Rewritable" : true
+    }
+  ]
+}
