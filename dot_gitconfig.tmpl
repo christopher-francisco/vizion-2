@@ -1,0 +1,33 @@
+# Rendered by chezmoi: edit with `chezmoi edit ~/.gitconfig`, not `git config --global`.
+[user]
+	name = {{ .name | quote }}
+	email = {{ .email | quote }}
+
+[core]
+	editor = nvim
+	pager = delta
+
+[interactive]
+	diffFilter = delta --color-only
+
+[filter "lfs"]
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true
+
+[delta]
+	line-numbers = true
+	features = decorations
+	whitespace-error-style = 22 reverse
+	side-by-side = false
+	navigate = false
+
+[delta "decorations"]
+	commit-decoration-style = bold yellow box ul
+	file-style = bold yellow ul
+	file-decoration-style = none
+
+# Per-machine delta toggles written by the dnav/dnonav/dvsp/dsp aliases; not managed by chezmoi.
+[include]
+	path = ~/.config/git/delta-toggles

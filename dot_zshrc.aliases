@@ -38,10 +38,11 @@ alias nvim-legacy='NVIM_APPNAME=nvim-legacy nvim'
 # Quick alises
 alias gccount='git rev-list --count develop..' # commits count between current branch and develop
 
-alias dnav='git config --global delta.navigate true'
-alias dnonav='git config --global delta.navigate false'
-alias dvsp='git config --global delta.side-by-side true'
-alias dsp='git config --global delta.side-by-side false'
+# delta toggles go to an unmanaged file included by ~/.gitconfig (a chezmoi-rendered copy)
+alias dnav='git config --file ~/.config/git/delta-toggles delta.navigate true'
+alias dnonav='git config --file ~/.config/git/delta-toggles delta.navigate false'
+alias dvsp='git config --file ~/.config/git/delta-toggles delta.side-by-side true'
+alias dsp='git config --file ~/.config/git/delta-toggles delta.side-by-side false'
 
 gitPrUrl() {
     gh pr view --json url --jq .url
