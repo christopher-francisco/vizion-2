@@ -4,7 +4,7 @@
 # files hashed below changes, e.g. after `chezmoi update` pulls a lock file updated elsewhere.
 # tmux.conf: {{ include "dot_config/tmux/tmux.conf.tmpl" | sha256sum }}
 # nvim lock: {{ include "linked/nvim/lazy-lock.json" | sha256sum }}
-# nvim extras: {{ include "dot_config/nvim/lazyvim.json" | sha256sum }}
+# nvim extras: {{ include "dot_config/exact_nvim/lazyvim.json" | sha256sum }}
 # nvim-legacy lock: {{ include "linked/nvim-legacy/lazy-lock.json" | sha256sum }}
 set -euo pipefail
 

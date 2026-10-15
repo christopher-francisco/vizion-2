@@ -63,6 +63,7 @@ The clone's path is saved as `sourceDir`, so chezmoi keeps using it.
 
 - **Pull changes from other machines:** `chezmoi update` (git pull + apply).
 - **Files you edit yourself** (shell, tmux, git, both Neovim configs…) are copies. Edit with `chezmoi edit --apply <file>` (`--watch` re-applies on every save), or edit in place and run `chezmoi re-add <file>`. `chezmoi diff` shows what drifted. Templates (`~/.gitconfig`, `tmux.conf`) can only be changed with `chezmoi edit`.
+- **Both Neovim configs are owned exactly:** `chezmoi apply` deletes any file in `~/.config/nvim` or `~/.config/nvim-legacy` that isn't in the repo. Add a new file with `chezmoi add <file>` before the next apply.
 - **Files apps rewrite** are symlinks into `linked/`, so the app's changes land straight in the repo: both Neovim `lazy-lock.json` files, VS Code `settings.json` and `keybindings.json`, the Karabiner folder and the iTerm2 Dynamic Profiles. iTerm2's global settings are read from `linked/iterm2` directly.
 - **iTerm2:** change profiles in iTerm's UI; the change is written to `linked/iterm2/DynamicProfiles/` (ADR 0004). Profiles inherit from `Base`, so a change to `Base` affects all of them.
 - **Committing:** on personal machines chezmoi commits and pushes after every `chezmoi edit`/`re-add`. On the work laptop that's off: `chezmoi cd`, review, commit and push by hand. Changes apps make to `linked/` files are never auto-committed: commit them from `chezmoi cd`.
