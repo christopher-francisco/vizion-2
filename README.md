@@ -45,7 +45,7 @@ To change an answer later: `chezmoi init --prompt`, then `chezmoi apply`.
 5. `25-vscode-extensions`: the VS Code extensions in `packages.yaml`.
 6. `30-macos`: terminfo entries, iTerm2's settings folder, `defaults write` settings (`.chezmoidata/macos.yaml`).
 7. `40-plugins`: tmux plugins, Neovim plugins for both configs (from their `lazy-lock.json`), LazyVim's Mason tools.
-8. `50-gh-auth`: `gh auth login` in the browser for each GitHub host without a stored login. Once.
+8. `50-gh-auth`: `gh auth login` in the browser for each GitHub host without a stored login. Runs on every apply, so a skipped or failed login is offered again (on a terminal; otherwise it prints the command). A logged-in machine sees no output.
 
 Steps 2 and 4–7 re-run by themselves whenever what they install changes.
 

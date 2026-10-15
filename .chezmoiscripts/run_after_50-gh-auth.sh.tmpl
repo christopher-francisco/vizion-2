@@ -1,0 +1,30 @@
+{{- $hosts := list }}
+{{- if ne .profile "work" }}{{ $hosts = append $hosts "github.com" }}{{ end }}
+{{- if .github.enterpriseHost }}{{ $hosts = append $hosts .github.enterpriseHost }}{{ end }}
+{{- if $hosts -}}
+#!/bin/bash
+# Logs gh in to each GitHub host this machine uses, over HTTPS. gh keeps the tokens in the macOS
+# Keychain; git gets them through the credential helpers in ~/.gitconfig. Runs on every apply, so a
+# skipped or failed login is offered again; the check is local (no network) and the apply never fails.
+set -euo pipefail
+
+eval "$(/opt/homebrew/bin/brew shellenv)"
+
+# Ignore token env vars: only a stored login survives a new shell.
+no_env_token() {
+  env -u GITHUB_TOKEN -u GH_TOKEN -u GH_ENTERPRISE_TOKEN -u GITHUB_ENTERPRISE_TOKEN "$@"
+}
+
+for host in{{ range $hosts }} {{ . | quote }}{{ end }}; do
+  if no_env_token gh auth token --hostname "$host" >/dev/null 2>&1; then
+    continue
+  fi
+  hint="run: gh auth login --hostname $host --git-protocol https --web"
+  if [ -t 0 ]; then
+    no_env_token gh auth login --hostname "$host" --git-protocol https --web \
+      || echo "gh: login to $host failed; $hint" >&2
+  else
+    echo "gh: not logged in to $host; $hint" >&2
+  fi
+done
+{{ end -}}
