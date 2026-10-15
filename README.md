@@ -80,7 +80,25 @@ The clone's path is saved as `sourceDir`, so chezmoi keeps using it.
 
 ## Work laptop
 
-The work laptop uses the company email and the enterprise GitHub host, and doesn't log in to the personal GitHub account. It can pull this repo (it's public) but not push to it yet: a repo-scoped token for that is planned (board task 20), pending a check of company policy.
+The work laptop uses the company email and the enterprise GitHub host, and doesn't log in to the personal GitHub account. It pulls this repo without credentials (it's public). To push, it uses a token that can only write to this repo, stored in its own Keychain item; `~/.gitconfig` hands it to git for this repo's URL only. Auto-commit and auto-push are off: commit and push by hand from `chezmoi cd`.
+
+**Create the token** (on github.com, signed in to the personal account): Settings → Developer settings → Personal access tokens → Fine-grained tokens → Generate new token.
+
+- Expiration: up to a year (GitHub emails before it expires).
+- Repository access: Only select repositories → `christopher-francisco/vizion-2`.
+- Permissions → Repository permissions → Contents: Read and write. Nothing else (Metadata: Read-only is added automatically).
+
+**Store it on the laptop** (asks for the token; paste it):
+
+```sh
+security add-generic-password -U -s vizion-2-push -a christopher-francisco -w
+```
+
+Check with `chezmoi cd` then `git push --dry-run`. Without the Keychain item git falls back to asking for a username and password on every push.
+
+**Renew:** when it expires (pushes fail with `Authentication failed`), regenerate the token on GitHub (same page → the token → Regenerate) and run the same `security` command with the new value; `-U` replaces the old one. To remove it: `security delete-generic-password -s vizion-2-push`.
+
+The token isn't part of chezmoi or the repo; a wiped or lost laptop can only ever touch this repo with it. Revoke it on GitHub if that happens.
 
 ## Troubleshooting
 
