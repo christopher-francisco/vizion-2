@@ -46,6 +46,7 @@ To change an answer later: `chezmoi init --prompt`, then `chezmoi apply`.
 6. `30-macos`: terminfo entries, iTerm2's settings folder, `defaults write` settings (`.chezmoidata/macos.yaml`).
 7. `40-plugins`: tmux plugins, Neovim plugins for both configs (from their `lazy-lock.json`), LazyVim's Mason tools.
 8. `50-gh-auth`: `gh auth login` in the browser for each GitHub host without a stored login. Runs on every apply, so a skipped or failed login is offered again (on a terminal; otherwise it prints the command). A logged-in machine sees no output.
+9. `55-work-push-token` (work only): if the token for pushing this repo isn't in the Keychain yet, prints how to create it and waits; press Enter to paste and store it, or `s` to skip. Offered on every apply until stored (see [Work laptop](#work-laptop)).
 
 Steps 2 and 4–7 re-run by themselves whenever what they install changes.
 
@@ -88,7 +89,7 @@ The work laptop uses the company email and the enterprise GitHub host, and doesn
 - Repository access: Only select repositories → `christopher-francisco/vizion-2`.
 - Permissions → Repository permissions → Contents: Read and write. Nothing else (Metadata: Read-only is added automatically).
 
-**Store it on the laptop** (asks for the token; paste it):
+**Store it on the laptop:** `chezmoi apply` offers this until it's done (step 9 above). By hand, it's this (asks for the token twice; paste it):
 
 ```sh
 security add-generic-password -U -s vizion-2-push -a christopher-francisco -w

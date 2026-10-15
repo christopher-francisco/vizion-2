@@ -1,0 +1,38 @@
+{{- if eq .profile "work" -}}
+#!/bin/bash
+# Work only: offers to store the token this laptop pushes the repo with (README "Work laptop"); the
+# credential entry in ~/.gitconfig reads it. Runs on every apply until the Keychain item exists, waits
+# on a terminal, only prints without one, and never fails the apply.
+set -euo pipefail
+
+has_token() { security find-generic-password -s vizion-2-push >/dev/null 2>&1; }
+has_token && exit 0
+
+store="security add-generic-password -U -s vizion-2-push -a christopher-francisco -w"
+cat <<MSG
+vizion-2: no token to push this repo from this laptop.
+  1. Create one on github.com, signed in to the personal account:
+     https://github.com/settings/personal-access-tokens/new
+     - Repository access: Only select repositories → christopher-francisco/vizion-2
+     - Repository permissions → Contents: Read and write (nothing else)
+     - Expiration: up to a year
+  2. Store it in the Keychain: $store
+MSG
+
+if [ ! -t 0 ]; then
+  echo "vizion-2: no terminal; run step 2 yourself, or apply again from a terminal." >&2
+  exit 0
+fi
+
+read -r -p "Press Enter once the token is created to store it now (paste it twice), or type s to skip: " answer
+if [ "$answer" = s ]; then
+  echo "vizion-2: skipped; offered again on the next apply."
+  exit 0
+fi
+$store || true
+if has_token; then
+  echo "vizion-2: token stored. Check with: chezmoi cd, then git push --dry-run"
+else
+  echo "vizion-2: token not stored; offered again on the next apply, or run step 2 yourself." >&2
+fi
+{{ end -}}
