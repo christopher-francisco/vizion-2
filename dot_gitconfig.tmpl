@@ -28,6 +28,17 @@
 	file-style = bold yellow ul
 	file-decoration-style = none
 
+# git asks gh for HTTPS credentials (what `gh auth setup-git` would write; run_once_after_50-gh-auth logs gh in).
+# The work laptop isn't logged in to the personal github.com account.
+{{- $hosts := list }}
+{{- if ne .profile "work" }}{{ $hosts = list "github.com" "gist.github.com" }}{{ end }}
+{{- if .github.enterpriseHost }}{{ $hosts = append $hosts .github.enterpriseHost }}{{ end }}
+{{- range $hosts }}
+[credential "https://{{ . }}"]
+	helper =
+	helper = !/opt/homebrew/bin/gh auth git-credential
+{{- end }}
+
 # Per-machine delta toggles written by the dnav/dnonav/dvsp/dsp aliases; not managed by chezmoi.
 [include]
 	path = ~/.config/git/delta-toggles

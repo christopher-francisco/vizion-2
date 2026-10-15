@@ -11,7 +11,10 @@
     gui = {{ promptBoolOnce . "groups.gui" "Install GUI apps (iTerm, VS Code, Karabiner…)" true }}
     personal = {{ promptBoolOnce . "groups.personal" "Install personal apps (1Password, Spotify)" (not $isWork) }}
     mas = {{ promptBoolOnce . "groups.mas" "Install Mac App Store apps (needs Apple ID sign-in)" (not $isWork) }}
-    enterprise = {{ promptBoolOnce . "groups.enterprise" "Log gh in to a GitHub Enterprise host" $isWork }}
+    {{- $enterprise := promptBoolOnce . "groups.enterprise" "Log gh in to a GitHub Enterprise host" $isWork }}
+    enterprise = {{ $enterprise }}
+  [data.github]
+    enterpriseHost = {{ if $enterprise }}{{ promptStringOnce . "github.enterpriseHost" "GitHub Enterprise host (e.g. github.example.com)" | quote }}{{ else }}""{{ end }}
   [data.machine]
     crowdstrike = {{ promptBoolOnce . "machine.crowdstrike" "Is CrowdStrike installed (inline tmux navigator bindings)?" $isWork }}
 
