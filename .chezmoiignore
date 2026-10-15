@@ -7,6 +7,9 @@ install.sh
 linked
 linked/**
 
+# Written by oh-my-zsh at runtime; `exact = true` on the external would delete it otherwise.
+.oh-my-zsh/cache/**
+
 {{ if not .groups.gui }}
 .config/karabiner
 Library/Application Support/iTerm2/**

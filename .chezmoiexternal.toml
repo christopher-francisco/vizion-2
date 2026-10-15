@@ -1,0 +1,12 @@
+# Third-party code fetched by chezmoi instead of being vendored. Refreshed weekly by `chezmoi apply`.
+[".oh-my-zsh"]
+  type = "archive"
+  url = "https://github.com/ohmyzsh/ohmyzsh/archive/master.tar.gz"
+  exact = true
+  stripComponents = 1
+  refreshPeriod = "168h"
+
+[".config/tmux/plugins/tpm"]
+  type = "git-repo"
+  url = "https://github.com/tmux-plugins/tpm"
+  refreshPeriod = "168h"
