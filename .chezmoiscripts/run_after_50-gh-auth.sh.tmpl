@@ -16,6 +16,7 @@ no_env_token() {
   env -u GITHUB_TOKEN -u GH_TOKEN -u GH_ENTERPRISE_TOKEN -u GITHUB_ENTERPRISE_TOKEN "$@"
 }
 
+# shellcheck disable=SC2043 # one host on most machines
 for host in{{ range $hosts }} {{ . | quote }}{{ end }}; do
   if no_env_token gh auth token --hostname "$host" >/dev/null 2>&1; then
     continue

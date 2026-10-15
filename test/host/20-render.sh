@@ -23,8 +23,14 @@ for p in "${PROFILES[@]}"; do
     name=$(basename "$script")
     check "$p: $name: bash -n" bash -n "$script"
     if [ "$have_shellcheck" = 1 ]; then
-      check "$p: $name: shellcheck" shellcheck --shell=bash "$script"
+      check "$p: $name: shellcheck" shellcheck --norc --shell=bash "$script"
     fi
   done
 done
 [ "$have_shellcheck" = 1 ] || skip "shellcheck (not installed: brew install shellcheck)"
+
+# The suite's own scripts
+if [ "$have_shellcheck" = 1 ]; then
+  check "test/: shellcheck" shellcheck --shell=bash "$REPO"/test/run.sh "$REPO"/test/lib/common.sh \
+    "$REPO"/test/lib/stubs/* "$REPO"/test/host/*.sh
+fi
