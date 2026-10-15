@@ -3,40 +3,92 @@
 # profile, name, email and enterprise host, and presses Enter on every yes/no to take its default.
 # Usage: init.exp <profile> <name> <email> <enterprise host> <command…>
 # The command is what asks the questions: `chezmoi init …` on the host, `ssh -tt … <bootstrap>` in a VM.
+# Environment:
+#   INIT_EXP_LOG        file to log the whole conversation to
+#   INIT_EXP_SET        override yes/no defaults: "<question start>=<true|false>;…"
+#   INIT_EXP_PASSWORD   after the questions, answer sudo password prompts with this (VM bootstrap)
+#   INIT_EXP_UNATTENDED after the questions, interrupt the gh browser login and skip the push-token
+#                       prompt instead of waiting for a person (VM bootstrap)
 lassign $argv profile name email host
 set timeout 60
 log_user 0
-if {[info exists env(INIT_EXP_LOG)]} { log_file -noappend $env(INIT_EXP_LOG) }
+if {[info exists env(INIT_EXP_LOG)]} { log_file -a -noappend $env(INIT_EXP_LOG) }
 eval spawn [lrange $argv 4 end]
 
 # The prompt UI asks the terminal for its background colour and waits for the reply; answer like a
 # real terminal (its cursor-position query must stay unanswered, or chezmoi quits).
 expect_before {
   -ex "\x1b]11;?" { send "\x1b]11;rgb:0000/0000/0000\x1b\\"; exp_continue }
-  timeout { puts stderr "init.exp: timed out waiting for a prompt"; exit 1 }
   eof { puts stderr "init.exp: command ended before all prompts were answered"; exit 1 }
 }
 
-# Wait for the prompt's input field (it turns on bracketed paste) before typing: keys sent earlier
-# reach the terminal before the field reads them, and the Enter gets lost.
-proc answer {prompt reply} {
-  expect $prompt
-  expect -ex "\x1b\[?2004h"
-  send "$reply\r"
+# need <text>: waits for the text to show up; gives up after $timeout.
+proc need {text} {
+  expect {
+    -ex $text {}
+    timeout { puts stderr "init.exp: timed out waiting for \"$text\""; exit 1 }
+  }
+}
+# Each input field turns on bracketed paste while it's open and off when it closes.
+set field_open "\x1b\[?2004h"
+set field_closed "\x1b\[?2004l"
+
+# Yes/no answers that differ from the default (INIT_EXP_SET).
+set overrides {}
+if {[info exists env(INIT_EXP_SET)]} {
+  foreach pair [split $env(INIT_EXP_SET) ";"] {
+    if {[regexp {^(.*)=(.*)$} $pair -> q v]} { lappend overrides $q $v }
+  }
+}
+
+# Keys only reach the field once it has drawn itself ("> "). Text and choice fields take the answer
+# and Enter in one go (an Enter sent on its own afterwards can also answer the next question). Yes/no
+# fields ignore text that comes with its Enter, so an override is typed, shown, then confirmed.
+# Each answer waits for its field to close, so nothing leaks into the next one.
+proc answer {prompt reply {kind text}} {
+  global overrides field_open field_closed
+  foreach {q v} $overrides { if {[string first $q $prompt] == 0} { set reply $v } }
+  need $prompt
+  need $field_open
+  need "\r> "
+  if {$kind eq "bool" && $reply ne ""} {
+    send -- $reply
+    need "> $reply"
+    send "\r"
+  } else {
+    send -- "$reply\r"
+  }
+  need $field_closed
 }
 answer "Machine profile" $profile
 answer "Git name" $name
 answer "Git email" $email
-answer "Install GUI apps" ""
-answer "Install personal apps" ""
-answer "Install Mac App Store apps" ""
-answer "Log gh in to a GitHub Enterprise host" ""
+answer "Install GUI apps" "" bool
+answer "Install personal apps" "" bool
+answer "Install Mac App Store apps" "" bool
+answer "Log gh in to a GitHub Enterprise host" "" bool
 if {$profile eq "work"} { answer "GitHub Enterprise host" $host }
-answer "CrowdStrike" ""
+answer "CrowdStrike" "" bool
 
 # Anything after the prompts (e.g. the rest of a bootstrap) runs untimed.
 expect_before
 set timeout -1
-expect eof
+set password [expr {[info exists env(INIT_EXP_PASSWORD)] ? $env(INIT_EXP_PASSWORD) : ""}]
+set unattended [info exists env(INIT_EXP_UNATTENDED)]
+expect {
+  -ex "\x1b]11;?" { send "\x1b]11;rgb:0000/0000/0000\x1b\\"; exp_continue }
+  -re {Password:|password for } {
+    if {$password eq ""} { puts stderr "init.exp: asked for a password"; exit 1 }
+    send "$password\r"; exp_continue
+  }
+  -re {Press .*RETURN.*to continue} { send "\r"; exp_continue }
+  -re {one-time code|Press .*Enter.* to open} {
+    if {!$unattended} { exp_continue }
+    # Ctrl-C reaches the whole apply, which stops here; the caller applies again without a terminal.
+    send "\x03"; exp_continue
+  }
+  "or type s to skip" { if {$unattended} { send "s\r" }; exp_continue }
+  eof
+}
 catch wait result
 exit [lindex $result 3]

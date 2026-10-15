@@ -81,8 +81,9 @@ The clone's path is saved as `sourceDir`, so chezmoi keeps using it.
 
 ## Testing
 
-`test/run.sh --host-only` checks both profiles on this Mac in about 15 seconds, without touching `$HOME`. It answers the first-run questions, renders every file and script, checks the Brewfile names exist, and runs the gh-login and push-token scripts against stubs. Results land in `test/out/`. A change to the config, the managed files or the Brewfile shows up as a snapshot diff: if it's intended, run `test/run.sh --host-only --update` and commit the new `test/expected/` files with it. Clean-VM runs are coming (`docs/requirements/0.1.0_TEST_SUITE.md`).
-
+- `test/run.sh --host-only` checks both profiles on this Mac in about 15 seconds, without touching `$HOME`: it answers the first-run questions, renders every file and script (shellcheck included), checks the Brewfile names exist, and runs the gh-login and push-token scripts against stubs.
+- `test/run.sh` also bootstraps a clean Tart VM per profile from the working tree, two at a time (about 40 minutes), then checks the result: a further apply changes nothing, the Brewfile is satisfied, runtimes and tmux/Neovim plugins are installed at their locked commits, Mason tools, treesitter parsers, iTerm, VS Code, git and zsh. The VMs are deleted afterwards (`--keep` keeps them, `--from-github` tests `main` on GitHub instead). Needs Tart; the test SSH key lives in `~/.cache/vizion-2-test/`.
+- Results land in `test/out/<timestamp>/`. A change to the config, the managed files or the Brewfile shows up as a snapshot diff: if it's intended, run `test/run.sh --host-only --update` and commit the new `test/expected/` files with it.
 ## Work laptop
 
 The work laptop uses the company email and the enterprise GitHub host, and doesn't log in to the personal GitHub account. It pulls this repo without credentials (it's public). To push, it uses a token that can only write to this repo, stored in its own Keychain item; `~/.gitconfig` hands it to git for this repo's URL only. Auto-commit and auto-push are off: commit and push by hand from `chezmoi cd`.
