@@ -1,18 +1,21 @@
 #!/bin/bash
 # One clean-VM scenario, unattended (docs/requirements/0.1.0_TEST_SUITE.md T3). Called by test/run.sh.
-# Usage: test/vm.sh <scenario> <results dir> [--keep] [--from-github]
+# Usage: test/vm.sh <scenario> <results dir> [--keep] [--from-github] [--guided]
 #   --keep         leave the VM running afterwards (prints its name and IP)
 #   --from-github  bootstrap from christopher-francisco/vizion-2 on GitHub instead of the working tree
+#   --guided       open the VM's window, and if the checks ran, leave the VM running for test/guided.sh
+#                  (its name and IP go to <results dir>/vm.env)
 # Prints `ok`/`not ok` lines; logs go to the results dir.
 set -uo pipefail
 
 scenario=$1 dir=$2
 shift 2
-keep=0 from_github=0
+keep=0 from_github=0 guided=0
 for arg in "$@"; do
   case $arg in
     --keep) keep=1 ;;
     --from-github) from_github=1 ;;
+    --guided) guided=1 ;;
     *) echo "unknown option: $arg" >&2; exit 2 ;;
   esac
 done
@@ -33,7 +36,9 @@ say() { echo "# $scenario: $*"; }
 # Fails the scenario: everything after this step depends on it.
 fatal() { not_ok "$scenario: $1" "${2:-see ${log#"$REPO"/}}"; exit 1; }
 
-if [ "$keep" = 0 ]; then trap 'vm_delete "$name"' EXIT; fi
+# Deleted at the end unless kept, or handed over to the guided steps (which delete it themselves).
+handed_over=0
+if [ "$keep" = 0 ]; then trap '[ "$handed_over" = 1 ] || vm_delete "$name"' EXIT; fi
 
 # The source under test: the working tree as a commit (uncommitted and new files included), so a
 # change can be tested before it's committed or pushed.
@@ -53,7 +58,9 @@ else
 fi
 
 say "booting $name"
-ip=$(vm_boot "$name" "$log") || fatal "boot the VM"
+window=
+[ "$guided" = 1 ] && window=--window
+ip=$(vm_boot "$name" "$log" $window) || fatal "boot the VM"
 vm_authorize "$ip" >> "$log" 2>&1 || fatal "log in to the VM"
 vm_make_clean "$ip" >> "$log" 2>&1 || fatal "remove CLT and passwordless sudo"
 ok "$scenario: VM $name up at $ip, without CLT or passwordless sudo"
@@ -94,3 +101,8 @@ tar -C "$REPO/test" -c vm | vm_ssh "$ip" 'mkdir -p ~/vizion-2-test && tar -x -C 
   vm_ssh "$ip" "bash ~/vizion-2-test/vm/assert.sh $PROFILE" > "$dir/assert.txt" 2>&1
 grep -q '^ok' "$dir/assert.txt" || not_ok "$scenario: run the checks in the VM" "$(tail -20 "$dir/assert.txt")"
 sed -E "s/^(not ok|ok) - /\1 - $scenario: /" "$dir/assert.txt"
+
+if [ "$guided" = 1 ] && grep -q '^ok' "$dir/assert.txt"; then
+  printf 'name=%q\nip=%q\n' "$name" "$ip" > "$dir/vm.env"
+  handed_over=1
+fi

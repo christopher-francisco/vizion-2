@@ -15,12 +15,14 @@ vm_ssh() {
   ssh -i "$VM_KEY" "${SSH_OPTS[@]}" -o BatchMode=yes "$VM_USER@$ip" "$@"
 }
 
-# vm_boot <name> <log>: clones the image and starts the VM headless; prints its IP once SSH answers.
+# vm_boot <name> <log> [--window]: clones the image and starts the VM, headless unless --window
+# (the guided steps need its screen); prints its IP once SSH answers.
 vm_boot() {
-  local name=$1 log=$2 ip
+  local name=$1 log=$2 ip graphics=--no-graphics
+  [ "${3:-}" = --window ] && graphics=
   tart list --quiet | grep -qxF "$VM_IMAGE" || tart pull "$VM_IMAGE" >> "$log" 2>&1 || return 1
   tart clone "$VM_IMAGE" "$name" >> "$log" 2>&1 || return 1
-  tart run --no-graphics "$name" >> "$log" 2>&1 &
+  tart run $graphics "$name" >> "$log" 2>&1 &
   ip=$(tart ip "$name" --wait 300) || return 1
   for _ in $(seq 60); do nc -z "$ip" 22 2>/dev/null && break; sleep 2; done
   echo "$ip"
