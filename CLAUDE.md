@@ -10,8 +10,8 @@ Rewrite of [vizion](../vizion), the script that provisions a brand new Mac with 
 - No Ruby. Shell for scripts, YAML for data, chezmoi (Go) templates.
 - No secrets in the repo. Today none are needed: GitHub auth lives in gh. Git identity is chosen per machine.
 - Neovim config must stay in sync across all machines via git. LazyVim is the default config (`~/.config/nvim`); the old one is `nvim-legacy`.
-- Must work on a locked-down company laptop (no personal Apple ID, possibly no admin rights beyond Homebrew).
+- Must work on a locked-down company laptop (no personal Apple ID; the account is a permanent admin, needed by the Homebrew install and the Karabiner cask).
 
 ## Current focus
 
-Tooling and design are accepted (ADRs 0001–0003, `docs/requirements/0.1.0_*`). Next: building the chezmoi repo, starting with board task 4.
+Setup is built and VM-tested (ADRs 0001–0004, `docs/requirements/0.1.0_*`). Next: the regression test suite (ADR 0005, `0.1.0_TEST_SUITE.md`), board tasks 27–30.
