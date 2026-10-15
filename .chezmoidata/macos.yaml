@@ -1,0 +1,9 @@
+# macOS `defaults write` settings, one list per group (like packages.yaml). Applied by
+# .chezmoiscripts/run_onchange_after_30-macos.sh.tmpl as `defaults write <domain> <key> -<type> <value>`.
+macos:
+  defaults:
+    gui:
+      # iTerm2: no generative AI features (also set in the slim plist, see design "iTerm2")
+      - { domain: com.googlecode.iterm2, key: GenerativeAIAllowed, type: bool, value: false }
+      # iTerm2: with prefs loaded from a custom folder, save changes there (kept from vizion)
+      - { domain: com.googlecode.iterm2, key: NoSyncNeverRemindPrefsChangesLostForFile_selection, type: int, value: 0 }
