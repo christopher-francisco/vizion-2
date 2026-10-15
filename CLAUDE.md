@@ -1,0 +1,17 @@
+# Vizion 2
+
+Rewrite of [vizion](../vizion), the script that provisions a brand new Mac with all my tools and dotfiles. Vizion is hand-written Ruby (Rake tasks, a custom installer, linker and logger) and installs everything or nothing. Vizion 2 replaces the custom code with off-the-shelf tooling (proposed: chezmoi + Homebrew Bundle) and adds profiles so a machine, such as a company laptop, can get only a subset of the setup.
+
+## Core constraints
+
+- macOS only (Apple Silicon first).
+- No hand-written installer framework: lean on the tool's features and keep custom scripts small and idempotent.
+- Selective install: every package and config belongs to a group, and each machine picks its groups.
+- No Ruby. Shell for scripts, YAML for data, chezmoi (Go) templates.
+- No secrets in the repo. Today none are needed: GitHub auth lives in gh. Git identity is chosen per machine.
+- Neovim config must stay in sync across all machines via git. LazyVim is the default config (`~/.config/nvim`); the old one is `nvim-legacy`.
+- Must work on a locked-down company laptop (no personal Apple ID, possibly no admin rights beyond Homebrew).
+
+## Current focus
+
+Tooling and design are accepted (ADRs 0001–0003, `docs/requirements/0.1.0_*`). Next: building the chezmoi repo, starting with board task 4.

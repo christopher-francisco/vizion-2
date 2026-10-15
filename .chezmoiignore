@@ -1,0 +1,14 @@
+# Repo-only files, never applied to $HOME. Patterns match target paths.
+CLAUDE.md
+README.md
+docs
+docs/**
+install.sh
+linked
+linked/**
+
+{{ if not .groups.gui }}
+.config/karabiner
+Library/Application Support/iTerm2/**
+Library/Application Support/Code/**
+{{ end }}

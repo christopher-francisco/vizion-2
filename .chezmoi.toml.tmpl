@@ -1,0 +1,20 @@
+{{- /* First-run prompts. Answers are stored in ~/.config/chezmoi/chezmoi.toml; re-ask with `chezmoi init --prompt`. */ -}}
+{{- $profile := promptChoiceOnce . "profile" "Machine profile" (list "personal" "work") -}}
+{{- $isWork := eq $profile "work" -}}
+[data]
+  profile = {{ $profile | quote }}
+  name = {{ promptStringOnce . "name" "Git name" | quote }}
+  email = {{ promptStringOnce . "email" "Git email for this machine" | quote }}
+  [data.groups]
+    core = true
+    dev = true
+    gui = {{ promptBoolOnce . "groups.gui" "Install GUI apps (iTerm, VS Code, Karabiner…)" true }}
+    personal = {{ promptBoolOnce . "groups.personal" "Install personal apps (1Password, Spotify)" (not $isWork) }}
+    mas = {{ promptBoolOnce . "groups.mas" "Install Mac App Store apps (needs Apple ID sign-in)" (not $isWork) }}
+    enterprise = {{ promptBoolOnce . "groups.enterprise" "Log gh in to a GitHub Enterprise host" $isWork }}
+  [data.machine]
+    crowdstrike = {{ promptBoolOnce . "machine.crowdstrike" "Is CrowdStrike installed (inline tmux navigator bindings)?" $isWork }}
+
+[git]
+  autoCommit = {{ not $isWork }}
+  autoPush = {{ not $isWork }}
