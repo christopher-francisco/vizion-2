@@ -48,7 +48,7 @@ if [ "$from_github" = 0 ]; then
   (cd "$REPO" && git ls-files -z -co --exclude-standard) | rsync -a --from0 --files-from=- "$REPO/" "$src/"
   (cd "$REPO" && git ls-files -z -d) | (cd "$src" && xargs -0 rm -f --)
   git -C "$src" add -A
-  git -C "$src" -c user.name=test -c user.email=test@example.com commit -q -m "Working tree under test" 2>/dev/null
+  git -C "$src" -c user.name=test -c user.email=test@example.com commit -q -m "Working tree under test" > /dev/null 2>&1
   git -C "$src" remote set-url origin https://github.com/christopher-francisco/vizion-2.git
   say "source: $(git -C "$src" log --oneline -1)"
   repo_arg=
