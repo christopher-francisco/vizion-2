@@ -1,6 +1,9 @@
 {{- /* First-run prompts. Answers are stored in ~/.config/chezmoi/chezmoi.toml; re-ask with `chezmoi init --prompt`. */ -}}
 {{- $profile := promptChoiceOnce . "profile" "Machine profile" (list "personal" "work") -}}
 {{- $isWork := eq $profile "work" -}}
+# Keep using the clone this machine was initialised from (e.g. `chezmoi init --source ~/Developer/code/vizion-2`).
+sourceDir = {{ .chezmoi.sourceDir | quote }}
+
 [data]
   profile = {{ $profile | quote }}
   name = {{ promptStringOnce . "name" "Git name" | quote }}
