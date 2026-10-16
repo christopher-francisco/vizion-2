@@ -4351,10 +4351,25 @@
 	<key>New Bookmarks</key>
 	<array>
 		<dict>
+			<key>Command</key>
+			<string>/bin/bash --login</string>
+			<key>Custom Command</key>
+			<string>No</string>
+			<key>Default Bookmark</key>
+			<string>No</string>
 			<key>Guid</key>
 			<string>B45E0000-0000-4000-8000-000000000000</string>
+			<key>Jobs to Ignore</key>
+			<array>
+				<string>rlogin</string>
+				<string>ssh</string>
+				<string>slogin</string>
+				<string>telnet</string>
+			</array>
 			<key>Name</key>
 			<string>iTerm defaults</string>
+			<key>Prompt Before Closing 2</key>
+			<false/>
 			<key>Tags</key>
 			<array>
 				<string>base</string>
