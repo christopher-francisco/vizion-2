@@ -9,7 +9,9 @@
 #   --from-github  bootstrap the VMs from GitHub main instead of the working tree
 # The host checks run first; the VMs (up to two at a time, tens of minutes) only if they pass. After
 # each pair of VMs come their guided steps, one VM after the other.
-# Results are printed and saved under test/out/<timestamp>/; exits non-zero if any check failed.
+# Results are printed and saved under ~/.cache/vizion-2-test/out/<timestamp>/, outside the source
+# dir: chezmoi reads every .chezmoidata in it, so copies of the source must not land there. Exits
+# non-zero if any check failed.
 set -uo pipefail
 
 host_only=0
@@ -33,7 +35,7 @@ done
 
 # shellcheck source=lib/common.sh
 source "$(dirname "$0")/lib/common.sh"
-OUT=$REPO/test/out/$(date +%Y%m%d-%H%M%S)
+OUT=$HOME/.cache/vizion-2-test/out/$(date +%Y%m%d-%H%M%S)
 WORK=$OUT/host-scratch
 mkdir -p "$WORK"
 

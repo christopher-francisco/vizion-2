@@ -32,6 +32,10 @@ cask "font-meslo-lg-nerd-font"
 cask "font-fira-code-nerd-font"
 cask "1password"
 cask "spotify"
+cask "alcove"
+cask "blender"
+cask "godot"
+cask "pearcleaner"
 mas "Boop", id: 1518425043
 mas "Desk Remote Control", id: 1509037746
 mas "Magnet", id: 441258766

@@ -22,7 +22,7 @@ packages:
       - waderyan.gitblame
       - yoavbls.pretty-ts-errors
   personal:
-    casks: [1password, spotify]
+    casks: [1password, spotify, alcove, blender, godot, pearcleaner]
   mas:
     brews: [mas]
     apps: { Boop: 1518425043, "Desk Remote Control": 1509037746, Magnet: 441258766, "Things 3": 904280696, Xcode: 497799835 }
