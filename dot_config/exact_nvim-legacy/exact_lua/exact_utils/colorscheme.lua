@@ -1,6 +1,8 @@
 local M = {}
 
-M.colorscheme = 'tokyonight'
+-- The machine's colour scheme (first-run answer `theme`, rendered into config/theme.lua). Unlike LazyVim,
+-- this config doesn't follow the terminal window: its lualine theme and lazy loading assume one scheme.
+M.colorscheme = require('config.theme').default
 
 local pattern = "ColorSchemeLoad"
 

@@ -7,7 +7,11 @@ return {
   -- buffer with multiple LSPs attached (e.g. cssmodules_ls has no hover impl)
   { "folke/noice.nvim", opts = { lsp = { hover = { silent = true } } } },
 
-  -- Tokyonight: night style (plugin already included by LazyVim)
+  -- The machine's colour scheme (first-run answer `theme`); config/follow_terminal.lua switches to the
+  -- terminal window's
+  { "LazyVim/LazyVim", opts = { colorscheme = require("config.theme").default } },
+
+  -- Tokyonight: night style, day when 'background' is light (plugin already included by LazyVim)
   {
     "folke/tokyonight.nvim",
     opts = { style = "night" },
@@ -15,7 +19,8 @@ return {
 
   -- Additional colorschemes
   { "catppuccin/nvim", name = "catppuccin", lazy = true },
-  { "neanias/everforest-nvim", lazy = true, opts = { background = "soft", italics = true } },
+  -- main: lazy.nvim can't tell the module from the repo name, and without it opts never reach setup()
+  { "neanias/everforest-nvim", main = "everforest", lazy = true, opts = { background = "soft", italics = true } },
 
   -- Dashboard: custom Vizion logo via snacks.nvim
   {

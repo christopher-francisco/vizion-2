@@ -27,6 +27,9 @@ check() {
   if output=$("$@" 2>&1); then ok "$desc"; else not_ok "$desc" "$output"; fi
 }
 
+# expect_none <description> <list>: ok if the list (of problems) is empty, else shows it.
+expect_none() { if [ -z "$2" ]; then ok "$1"; else not_ok "$1" "$2"; fi; }
+
 # same_as_expected <description> <expected file> <actual file>: compares against a snapshot in
 # test/expected/. With --update (UPDATE=1) the snapshot is rewritten instead.
 same_as_expected() {

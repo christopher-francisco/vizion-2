@@ -134,6 +134,10 @@ if [ "$(vm_ssh "$ip" 'PATH=$HOME/.local/bin:$PATH chezmoi execute-template "{{ .
     "iTerm just opened in the VM. Session → Edit Session… shows the window's profile (This Mac); its Text tab shows the font size ($(grep -o '[0-9][0-9]*' <<< "$parent")pt)."
   ask "iTerm's colours follow the macOS appearance" \
     "Leave that iTerm window open and switch the VM between Light and Dark in System Settings → Appearance: the window's colours should change each time (Tokyonight Day / Night)."
+  ask "tmux and Neovim follow the iTerm window they're attached from" \
+    "In that iTerm window run: tmux new -s t nvim (Neovim in Tokyonight). Open another window from Profiles → retina →" \
+    "Everforest 13 and run: tmux attach -t t. The tmux status line and Neovim should turn Everforest; click the first window:" \
+    "back to Tokyonight. Then switch the VM's appearance: both should follow light/dark. (test/vm/attach.py checks the same with a fake iTerm.)"
   ask "Option+Left/Right jump by word in iTerm" \
     "In that iTerm window, type: echo one two three, then press Option+Left twice and Option+Right once."
   profiles=$(jq -r '[.profiles[].name] | join(", ")' "$REPO/linked/karabiner/karabiner.json")

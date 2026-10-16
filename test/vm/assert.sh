@@ -26,6 +26,9 @@ done)
 missing "chezmoi status is empty (except scripts that run on every apply)" "$status"
 missing "the source has no local changes (lock files not rewritten)" "$(git -C "$src" status --porcelain)"
 
+# --- Colour scheme: tmux and Neovim follow the iTerm window attached from (0.3.0_COLOUR_SCHEME_SYNC.md)
+python3 -I "$here/attach.py" "$(data '{{ includeTemplate "colour-schemes.json" . }}')" "$(data '{{ .theme }}')"
+
 # --- Homebrew
 brewfile=$(mktemp)
 chezmoi execute-template < "$src/.chezmoiscripts/run_onchange_before_10-brew.sh.tmpl" |
@@ -91,7 +94,7 @@ if [ "$(data '{{ .groups.gui }}')" = true ]; then
   # This Mac, the default profile, is rendered per machine (ADR 0006): a plain file, not a link.
   this_mac="$HOME/Library/Application Support/iTerm2/DynamicProfiles/zz-default.json"
   parent=$(jq -r '.Profiles[0]."Dynamic Profile Parent Name"' "$this_mac" 2>&1)
-  theme=$(data '{{ .iterm.theme }}') monitor=$(data '{{ .iterm.monitor }}')
+  theme=$(data '{{ .theme }}') monitor=$(data '{{ .iterm.monitor }}')
   tagged=$(jq -r --arg n "$parent" --arg m "$monitor" '.Profiles[] | select(.Name == $n and (.Tags | index($m))) | ."Dynamic Profile Parent Name"' \
     "$src"/linked/iterm2/DynamicProfiles/*.json | tr '[:upper:]' '[:lower:]')
   if [ ! -L "$this_mac" ] && [ "$tagged" = "$theme" ]; then

@@ -74,9 +74,17 @@ bind-key -T copy-mode-vi 'C-\' select-pane -l
 set -g @plugin 'christoomey/vim-tmux-navigator'
 {{- end }}
 
-# Source the theme
-# source "~/.config/tmux/themes/everforest.tmux.conf"
-source "~/.config/tmux/themes/tokyonight-night.tmux.conf"
+# Source the theme: the colour scheme and light/dark of the iTerm window in use (theme.sh, run when a
+# window attaches, gets focus or changes appearance); the machine's scheme, dark, until one says.
+# docs/requirements/0.3.0_COLOUR_SCHEME_SYNC.md
+source "~/.config/tmux/themes/{{ .theme }}-dark.tmux.conf"
+set -g @theme "{{ .theme }}-dark"
+set -g focus-events on
+set -ga update-environment ITERM_PROFILE
+set-hook -g client-attached 'run-shell "~/.config/tmux/theme.sh attached #{q:hook_client}"'
+set-hook -g client-focus-in 'run-shell "~/.config/tmux/theme.sh focus #{q:hook_client}"'
+set-hook -g client-dark-theme 'run-shell "~/.config/tmux/theme.sh appearance #{q:hook_client} dark"'
+set-hook -g client-light-theme 'run-shell "~/.config/tmux/theme.sh appearance #{q:hook_client} light"'
 source "~/.config/tmux/components/clean.tmux.conf"
 source "~/.config/tmux/themes/minimal.tmux.conf"
 

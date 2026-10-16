@@ -33,7 +33,8 @@ Answers are saved in `~/.config/chezmoi/chezmoi.toml` and asked only once. The p
 | Install Mac App Store apps | yes | no |
 | Log gh in to a GitHub Enterprise host (then: which host) | no | yes |
 | Is CrowdStrike installed (inline tmux navigator bindings)? | no | yes |
-| iTerm colour scheme, main monitor, font size on it (small/big): iTerm's default profile, only with GUI apps | tokyonight, retina, big | tokyonight, 4k, big |
+| Colour scheme (iTerm, tmux, Neovim) | tokyonight | tokyonight |
+| Main monitor, font size on it (small/big): iTerm's default profile, only with GUI apps | retina, big | 4k, big |
 
 To change an answer later: `chezmoi init --prompt`, then `chezmoi apply`.
 
@@ -63,12 +64,13 @@ The clone's path is saved as `sourceDir`, so chezmoi keeps using it.
 
 ## Day to day
 
-- **Pull changes from other machines:** `chezmoi update` (git pull + apply).
+- **Pull changes from other machines:** `chezmoi update` (git pull + apply). If the pull adds a first-run question, `chezmoi update` stops at the first file that needs it: run `chezmoi update --init` instead (asks only the new questions).
 - **Files you edit yourself** (shell, tmux, git, both Neovim configs…) are copies. Edit with `chezmoi edit --apply <file>` (`--watch` re-applies on every save), or edit in place and run `chezmoi re-add <file>`. `chezmoi diff` shows what drifted. Templates (`~/.gitconfig`, `tmux.conf`) can only be changed with `chezmoi edit`.
 - **Both Neovim configs are owned exactly:** `chezmoi apply` deletes any file in `~/.config/nvim` or `~/.config/nvim-legacy` that isn't in the repo. Add a new file with `chezmoi add <file>` before the next apply.
 - **Files apps rewrite** are symlinks into `linked/`, so the app's changes land straight in the repo: both Neovim `lazy-lock.json` files, VS Code `settings.json` and `keybindings.json`, the Karabiner folder and the iTerm2 Dynamic Profiles. iTerm2's global settings are read from `linked/iterm2` directly.
 - **iTerm2:** change profiles in iTerm's UI; the change is written to `linked/iterm2/DynamicProfiles/` (ADR 0004). Profiles inherit in levels (ADR 0006): `Base` (keys, terminal, behaviour) → a theme (`Tokyonight`, `Everforest`: light and dark colours, following the macOS appearance) → a size (`Tokyonight 11/13/16/20`, plus `13 tight`/`16 tight` with less line spacing, …: font and line spacing). Change colours on the theme and sizes on the size profile; a change to `Base` affects all of them. Pick a size for a monitor from Profiles → `retina`/`2k`/`4k`/`studio-display`.
-- **iTerm2 default profile:** new windows open in `This Mac`, which inherits from the profile of your colour scheme tagged with your main monitor, small or big (first-run answers `iterm.theme`, `iterm.monitor`, `iterm.size`). To switch, change them in `~/.config/chezmoi/chezmoi.toml` and `chezmoi apply`; iTerm picks it up without a restart. `This Mac` itself isn't saved from the UI: edit the profile it inherits from.
+- **iTerm2 default profile:** new windows open in `This Mac`, which inherits from the profile of your colour scheme tagged with your main monitor, small or big (first-run answers `theme`, `iterm.monitor`, `iterm.size`). To switch, change them in `~/.config/chezmoi/chezmoi.toml` and `chezmoi apply`; iTerm picks it up without a restart. `This Mac` itself isn't saved from the UI: edit the profile it inherits from.
+- **Colour scheme and light/dark in tmux and Neovim** follow the iTerm window in use (ADR 0007): open a window from another profile (Profiles → retina → Everforest 13) or in another appearance and `tmux attach`; tmux and LazyVim switch to match, and back when you click an older window still attached. The macOS appearance is the only light/dark switch. Outside iTerm, and in `nvim-legacy`, it's the first-run `theme`. `tmux show -gv @theme` shows what tmux loaded.
 - **Committing:** on personal machines chezmoi commits and pushes after every `chezmoi edit`/`re-add`. On the work laptop that's off: `chezmoi cd`, review, commit and push by hand. Changes apps make to `linked/` files are never auto-committed: commit them from `chezmoi cd`.
 - `chezmoi cd` (alias `vizion`) opens a shell in the repo.
 
@@ -77,7 +79,7 @@ The clone's path is saved as `sourceDir`, so chezmoi keeps using it.
 - **A Homebrew package, cask or App Store app:** add it to its group in `.chezmoidata/packages.yaml`. The next `chezmoi apply` installs it. Removing an entry uninstalls nothing; use `brew bundle cleanup` for that.
 - **A VS Code extension:** add its ID under `packages.gui.vscode` (`code --list-extensions` prints them). VS Code Settings Sync stays off on every machine: the repo is the source of truth.
 - **A macOS setting:** add a `{domain, key, type, value}` entry to its group in `.chezmoidata/macos.yaml`.
-- **An iTerm2 theme:** a new file in `linked/iterm2/DynamicProfiles/` with the theme profile (parent `Base`, `(Light)`/`(Dark)` colours) first, then its four sizes with the same monitor tags; every profile names its parent by both `Dynamic Profile Parent Name` and `Dynamic Profile Parent GUID`. Add a matching `symlink_<file>.json.tmpl` under `private_Library/Application Support/iTerm2/exact_DynamicProfiles/` (the first-run theme and monitor choices are read from the profile files). `test/run.sh --host-only` checks all of this. Profiles created in iTerm's UI are regular profiles in the main plist, not dynamic ones.
+- **An iTerm2 theme:** a new file in `linked/iterm2/DynamicProfiles/` with the theme profile (parent `Base`, `(Light)`/`(Dark)` colours) first, then its four sizes with the same monitor tags; every profile names its parent by both `Dynamic Profile Parent Name` and `Dynamic Profile Parent GUID`. Add a matching `symlink_<file>.json.tmpl` under `private_Library/Application Support/iTerm2/exact_DynamicProfiles/` (the first-run theme and monitor choices are read from the profile files). For tmux, add `dot_config/tmux/themes/<theme>-dark.tmux.conf` and `-light` setting the same `@` options as the others; for Neovim, a colour scheme plugin named like the theme (lower case). `test/run.sh --host-only` checks all of this. Profiles created in iTerm's UI are regular profiles in the main plist, not dynamic ones.
 - **A language runtime:** add it to `dot_tool-versions`.
 - **Machine-specific shell lines:** put them in `~/.zshrc.aliases.local` (not managed).
 

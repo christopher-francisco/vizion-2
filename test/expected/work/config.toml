@@ -4,6 +4,7 @@
   profile = "work"
   name = "Test User"
   email = "test@example.com"
+  theme = "tokyonight"
   [data.groups]
     core = true
     dev = true
@@ -16,7 +17,6 @@
   [data.machine]
     crowdstrike = true
   [data.iterm]
-    theme = "tokyonight"
     monitor = "4k"
     size = "big"
 

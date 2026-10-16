@@ -8,6 +8,19 @@ sourceDir = {{ .chezmoi.sourceDir | quote }}
   profile = {{ $profile | quote }}
   name = {{ promptStringOnce . "name" "Git name" | quote }}
   email = {{ promptStringOnce . "email" "Git email for this machine" | quote }}
+  {{- /* The colour scheme of iTerm's default profile, tmux and Neovim: the machine's own. A window opened
+  with another iTerm profile brings its scheme to tmux and Neovim (docs/requirements/0.3.0_COLOUR_SCHEME_SYNC.md).
+  Choices: the iTerm theme profiles. Default: the answer to the question this replaced, iterm.theme. */}}
+  {{- $profilesJson := joinPath .chezmoi.sourceDir "linked/iterm2/DynamicProfiles/*.json" | glob }}
+  {{- $themes := list }}
+  {{- range $profilesJson }}
+  {{-   range (include . | fromJson).Profiles }}
+  {{-     if eq (get . "Dynamic Profile Parent Name") "Base" }}{{ $themes = append $themes (lower .Name) }}{{ end }}
+  {{-   end }}
+  {{- end }}
+  {{- $themes = $themes | sortAlpha | uniq }}
+  {{- $oldTheme := dig "iterm" "theme" "" . }}
+  theme = {{ promptChoiceOnce . "theme" "Colour scheme (iTerm, tmux, Neovim)" $themes (ternary $oldTheme "tokyonight" (has $oldTheme $themes)) | quote }}
   [data.groups]
     core = true
     dev = true
@@ -22,17 +35,15 @@ sourceDir = {{ .chezmoi.sourceDir | quote }}
   [data.machine]
     crowdstrike = {{ promptBoolOnce . "machine.crowdstrike" "Is CrowdStrike installed (inline tmux navigator bindings)" $isWork }}
   [data.iterm]
-    {{- /* iTerm's default profile, "This Mac", inherits from the size profile of this theme tagged with this
-    monitor, the smaller or bigger of its two (ADR 0006). Themes and monitors are read from the profiles. */}}
-    {{- $themes := list }}{{ $monitors := list }}
-    {{- range joinPath .chezmoi.sourceDir "linked/iterm2/DynamicProfiles/*.json" | glob }}
+    {{- /* iTerm's default profile, "This Mac", inherits from the size profile of the colour scheme (theme)
+    tagged with this monitor, the smaller or bigger of its two (ADR 0006). Monitors are read from the profiles. */}}
+    {{- $monitors := list }}
+    {{- range $profilesJson }}
     {{-   range (include . | fromJson).Profiles }}
-    {{-     if eq (get . "Dynamic Profile Parent Name") "Base" }}{{ $themes = append $themes (lower .Name) }}
-    {{-     else if hasKey . "Normal Font" }}{{ $monitors = concat $monitors (rest .Tags) }}{{ end }}
+    {{-     if and (ne (get . "Dynamic Profile Parent Name") "Base") (hasKey . "Normal Font") }}{{ $monitors = concat $monitors (rest .Tags) }}{{ end }}
     {{-   end }}
     {{- end }}
-    {{- $themes = $themes | sortAlpha | uniq }}{{ $monitors = $monitors | sortAlpha | uniq }}
-    theme = {{ if $gui }}{{ promptChoiceOnce . "iterm.theme" "iTerm colour scheme" $themes "tokyonight" | quote }}{{ else }}""{{ end }}
+    {{- $monitors = $monitors | sortAlpha | uniq }}
     monitor = {{ if $gui }}{{ promptChoiceOnce . "iterm.monitor" "Main monitor (iTerm's default profile)" $monitors (ternary "4k" "retina" $isWork) | quote }}{{ else }}""{{ end }}
     size = {{ if $gui }}{{ promptChoiceOnce . "iterm.size" "Font size on that monitor" (list "small" "big") "big" | quote }}{{ else }}""{{ end }}
 

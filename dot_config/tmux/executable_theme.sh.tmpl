@@ -1,0 +1,44 @@
+#!/bin/sh
+# tmux hooks (tmux.conf): the theme follows the iTerm window in use, its profile's colour scheme in
+# its light/dark. docs/requirements/0.3.0_COLOUR_SCHEME_SYNC.md
+# Usage: theme.sh <event> <client> [dark|light]   (client: #{hook_client}, the one the hook fired for;
+# #{client_*} in a hook can describe another client)
+#   attached     a window attached: remember its iTerm profile, make it the active one
+#   focus        a window got focus: make it the active one
+#   appearance   a window's light/dark changed (or became known, after attaching): apply if it's active
+# Applying sources themes/<scheme>-<dark|light>.tmux.conf (once per change), records it in @theme
+# (`tmux show -gv @theme`) and tells every Neovim inside tmux (their servers are in the @nvim_server
+# pane option; config/follow_terminal.lua).
+# Rendered by chezmoi: the profile → scheme table comes from the iTerm profiles. Edit with `chezmoi edit`.
+event=$1 client=$2
+key=$(printf '%s' "$client" | tr -c 'a-zA-Z0-9' _) # option names: no slashes
+appearance=${3:-$(tmux display -p -c "$client" '#{client_theme}' 2>/dev/null)}
+
+case $event in
+  attached)
+    # ITERM_PROFILE: set by iTerm in each window, copied into the session on attach (update-environment).
+    session=$(tmux display -p -c "$client" '#{client_session}')
+    profile=$(tmux show-environment -t "$session" ITERM_PROFILE 2>/dev/null)
+    tmux set -s "@iterm_profile_$key" "${profile#ITERM_PROFILE=}"
+    tmux set -s @active_client "$client"
+    ;;
+  focus) tmux set -s @active_client "$client" ;;
+  appearance) [ "$(tmux show -sv @active_client 2>/dev/null)" = "$client" ] || exit 0 ;;
+esac
+[ -n "$appearance" ] || exit 0 # light/dark not known yet (just attached): the appearance hook follows
+
+case $(tmux show -sv "@iterm_profile_$key" 2>/dev/null) in
+{{- range $name, $scheme := (includeTemplate "colour-schemes.json" . | fromJson).profiles }}
+  {{ $name | squote }}) scheme={{ $scheme }} ;;
+{{- end }}
+  *) scheme={{ .theme }} ;; # This Mac (the machine's scheme), another terminal
+esac
+[ "$(tmux show -gv @theme 2>/dev/null)" = "$scheme-$appearance" ] && exit 0
+tmux source-file "$HOME/.config/tmux/themes/$scheme-$appearance.tmux.conf"
+tmux set -g @theme "$scheme-$appearance"
+command -v nvim >/dev/null || exit 0
+tmux list-panes -a -F '#{@nvim_server}' | sort -u | while read -r server; do
+  [ -n "$server" ] || continue
+  nvim --server "$server" --remote-expr \
+    "luaeval('require(\"config.follow_terminal\").apply(_A[1], _A[2])', ['$scheme', '$appearance'])" >/dev/null 2>&1 &
+done # not waited for: a busy Neovim mustn't hold up tmux

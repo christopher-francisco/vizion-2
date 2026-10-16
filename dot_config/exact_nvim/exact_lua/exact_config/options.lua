@@ -12,3 +12,6 @@ vim.opt.spelloptions:append("noplainbuffer")
 vim.opt.statuscolumn = "%=%{v:relnum?v:relnum:v:lnum} %s%C"
 vim.opt.sessionoptions = { "buffers", "curdir", "tabpages", "winsize", "help", "globals", "skiprtp", "folds" }
 vim.opt.wildmode = "longest,full"
+
+-- Colour scheme and light/dark from the terminal window (config/follow_terminal.lua)
+require("config.follow_terminal").setup()

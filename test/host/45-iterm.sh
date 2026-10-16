@@ -7,8 +7,6 @@ this_mac=B45E0000-0000-4000-8000-000000000002
 dyn=$(for f in "$dir"/*.json; do jq --arg f "${f##*/}" '[.Profiles | to_entries[] | .value + {_file: $f, _pos: .key}]' "$f"; done | jq -s 'add')
 # jqp <filter>: runs a filter over the profiles; prints the names it selects, one per line.
 jqp() { jq -r "$1" <<< "$dyn"; }
-# expect_none <description> <names>: ok if no profile was named.
-expect_none() { if [ -z "$2" ]; then ok "$1"; else not_ok "$1" "$2"; fi; }
 
 # The only regular profile is iTerm defaults, Base's parent: a dynamic profile without a parent would
 # inherit from the default profile, which is Base's own descendant.
@@ -55,7 +53,7 @@ bad=
 for theme in $(jqp '.[] | select(."Dynamic Profile Parent Name" == "Base") | .Name | ascii_downcase'); do
   for monitor in $monitors; do
     for size in small big; do
-      printf '[data.iterm]\n  theme = "%s"\n  monitor = "%s"\n  size = "%s"\n' "$theme" "$monitor" "$size" > "$WORK/iterm-combo.toml"
+      printf '[data]\n  theme = "%s"\n  [data.iterm]\n    monitor = "%s"\n    size = "%s"\n' "$theme" "$monitor" "$size" > "$WORK/iterm-combo.toml"
       out=$(chezmoi --source "$REPO" --config "$WORK/iterm-combo.toml" execute-template < "$template" 2>&1)
       parent=$(jq -r '.Profiles[0]."Dynamic Profile Parent Name"' <<< "$out" 2>/dev/null) || parent=${out##*error calling fail: }
       # small → the lower point size of the two for that theme and monitor, big → the higher
@@ -69,7 +67,7 @@ expect_none "iTerm: This Mac renders the right size for every theme, monitor and
 for p in "${PROFILES[@]}"; do
   f="$WORK/$p/archive/Library/Application Support/iTerm2/DynamicProfiles/zz-default.json"
   [ -f "$f" ] || { not_ok "$p: iTerm: This Mac rendered" "no ${f#"$WORK"/}"; continue; }
-  answers=$(cz "$p" execute-template '{{ .iterm.theme }} {{ .iterm.monitor }} {{ .iterm.size }}')
+  answers=$(cz "$p" execute-template '{{ .theme }} {{ .iterm.monitor }} {{ .iterm.size }}')
   got=$(jq -c '.Profiles[0] | [.Name, .Guid, .Tags]' "$f")
   check "$p: iTerm: This Mac is the default, rendered for $answers" test "$got" = "[\"This Mac\",\"$this_mac\",[]]"
 done

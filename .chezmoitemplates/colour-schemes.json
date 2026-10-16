@@ -1,0 +1,29 @@
+{{- /* The colour schemes, read from the iTerm theme profiles (ADR 0006): each scheme's dark and light
+background, and the scheme of every profile (a theme profile's own, a size profile's parent's).
+tmux's theme hook and Neovim follow the iTerm window with them (docs/requirements/0.3.0_COLOUR_SCHEME_SYNC.md).
+Use: includeTemplate "colour-schemes.json" . | fromJson */ -}}
+{{- $all := list -}}
+{{- range joinPath .chezmoi.sourceDir "linked/iterm2/DynamicProfiles/*.json" | glob -}}
+{{-   $all = concat $all (include . | fromJson).Profiles -}}
+{{- end -}}
+{{- $schemes := dict }}{{ $profiles := dict -}}
+{{- range $p := $all -}}
+{{-   if eq (get $p "Dynamic Profile Parent Name") "Base" -}}
+{{-     $bg := dict -}}
+{{-     range $appearance := list "Dark" "Light" -}}
+{{-       $c := index $p (printf "Background Color (%s)" $appearance) -}}
+{{-       $hex := printf "#%02x%02x%02x" (round (mulf (index $c "Red Component") 255) 0 | int) (round (mulf (index $c "Green Component") 255) 0 | int) (round (mulf (index $c "Blue Component") 255) 0 | int) -}}
+{{-       $_ := set $bg (lower $appearance) $hex -}}
+{{-     end -}}
+{{-     $_ := set $schemes (lower $p.Name) $bg -}}
+{{-     $_ = set $profiles $p.Name (lower $p.Name) -}}
+{{-   end -}}
+{{- end -}}
+{{- /* Load order puts parents first, so one pass reaches every descendant of a theme. */ -}}
+{{- range $p := $all -}}
+{{-   $parent := get $p "Dynamic Profile Parent Name" -}}
+{{-   if and (hasKey $profiles $parent) (not (hasKey $profiles $p.Name)) -}}
+{{-     $_ := set $profiles $p.Name (get $profiles $parent) -}}
+{{-   end -}}
+{{- end -}}
+{{- dict "schemes" $schemes "profiles" $profiles | toJson -}}
