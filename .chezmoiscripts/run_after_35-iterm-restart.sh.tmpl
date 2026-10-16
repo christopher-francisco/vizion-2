@@ -1,0 +1,26 @@
+{{- if .groups.gui -}}
+#!/bin/bash
+# Says to restart iTerm2 when its plist changed after iTerm started (a `chezmoi update` that pulled
+# one): iTerm reads linked/iterm2's plist only at launch, and on quit asks to overwrite it if a setting
+# was changed in the running iTerm. Runs on every apply until iTerm is restarted; prints nothing
+# otherwise. Also shows after iTerm itself wrote the plist while running (Settings → Save Now).
+set -euo pipefail
+
+plist={{ printf "%s/linked/iterm2/com.googlecode.iterm2.plist" .chezmoi.sourceDir | quote }}
+pid=$(pgrep -x iTerm2 | head -n 1) || exit 0
+[ -f "$plist" ] || exit 0
+
+# Seconds since iTerm started, from ps's elapsed time: [[dd-]hh:]mm:ss
+etime=$(ps -o etime= -p "$pid" | tr -d ' ')
+days=0
+if [[ $etime == *-* ]]; then days=${etime%%-*}; etime=${etime#*-}; fi
+IFS=: read -r -a parts <<< "$etime"
+elapsed=0
+for part in "${parts[@]}"; do elapsed=$((elapsed * 60 + 10#$part)); done
+started=$(($(date +%s) - days * 86400 - elapsed))
+
+if [ "$(stat -f %m "$plist")" -gt "$started" ]; then
+  echo "iTerm: its settings (linked/iterm2) changed since it started; restart iTerm to load them." >&2
+  echo "       If it asks to overwrite them on quit, choose Discard Local Changes, unless you meant to keep a setting you changed." >&2
+fi
+{{- end }}

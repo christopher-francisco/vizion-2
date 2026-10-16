@@ -29,8 +29,9 @@ for p in "${PROFILES[@]}"; do
 done
 [ "$have_shellcheck" = 1 ] || skip "shellcheck (not installed: brew install shellcheck)"
 
-# The suite's own scripts
+# The suite's own scripts, and the repo's (bin/)
 if [ "$have_shellcheck" = 1 ]; then
+  check "bin/: shellcheck" shellcheck --shell=bash "$REPO"/bin/*.sh
   check "test/: shellcheck" shellcheck -x --shell=bash "$REPO"/test/run.sh "$REPO"/test/vm.sh "$REPO"/test/guided.sh "$REPO"/test/lib/*.sh \
     "$REPO"/test/lib/stubs/* "$REPO"/test/host/*.sh "$REPO"/test/vm/*.sh "$REPO"/test/fixtures/*.sh
 fi

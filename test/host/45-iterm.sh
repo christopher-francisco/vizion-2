@@ -1,7 +1,11 @@
 # iTerm profiles: the layout of ADR 0006 (docs/requirements/0.2.0_ITERM_PROFILES.md). iTerm rewrites
 # the profile files through their symlinks (ADR 0004), so a UI edit can break any of this.
 dir=$REPO/linked/iterm2/DynamicProfiles
-plist=$(plutil -convert json -o - "$REPO/linked/iterm2/com.googlecode.iterm2.plist")
+plist_file=$REPO/linked/iterm2/com.googlecode.iterm2.plist
+clean=$REPO/bin/iterm-plist-clean.sh
+# The plist as git stores it: iTerm's saves add a copy of every dynamic profile, which the clean filter
+# strips (ADR 0008).
+plist=$("$clean" < "$plist_file" | plutil -convert json -o - -)
 this_mac=B45E0000-0000-4000-8000-000000000002
 # Every dynamic profile in load order (files by name, then order in the file), with its position.
 dyn=$(for f in "$dir"/*.json; do jq --arg f "${f##*/}" '[.Profiles | to_entries[] | .value + {_file: $f, _pos: .key}]' "$f"; done | jq -s 'add')
@@ -15,6 +19,20 @@ if [ "$regular" = '[{"Name":"iTerm defaults","Guid":"B45E0000-0000-4000-8000-000
   ok "iTerm: the plist's only regular profile is iTerm defaults"
 else not_ok "iTerm: the plist's only regular profile is iTerm defaults" "$regular"; fi
 check "iTerm: the plist's default profile is This Mac" test "$(jq -r '."Default Bookmark Guid"' <<< "$plist")" = "$this_mac"
+
+# The clean filter: set for the plist, strips dynamic profiles only, and leaves the stored plist as is
+# (it is in plutil's layout, iTerm's own, so a save that changes nothing shows no diff).
+check "iTerm: git runs the clean filter on the plist" test "$(git -C "$REPO" check-attr filter -- linked/iterm2/com.googlecode.iterm2.plist)" = "linked/iterm2/com.googlecode.iterm2.plist: filter: iterm-plist"
+planted=$WORK/iterm-planted.plist
+cp "$plist_file" "$planted"
+plutil -insert "New Bookmarks.0" -json '{"Name": "Planted", "Guid": "PLANTED", "Is Dynamic Profile": true}' "$planted"
+plutil -insert "New Bookmarks" -json '{"Name": "Planted 2", "Guid": "PLANTED-2", "Is Dynamic Profile": true}' -append "$planted"
+check "iTerm: the clean filter strips dynamic profiles from the plist" test "$("$clean" < "$planted" | plutil -convert json -o - - | jq -c '[."New Bookmarks"[].Name]')" = '["iTerm defaults"]'
+if git -C "$REPO" show :linked/iterm2/com.googlecode.iterm2.plist > "$WORK/iterm-stored.plist" \
+  && "$clean" < "$WORK/iterm-stored.plist" > "$WORK/iterm-stored-clean.plist" \
+  && cmp -s "$WORK/iterm-stored.plist" "$WORK/iterm-stored-clean.plist"; then
+  ok "iTerm: the stored plist is unchanged by the clean filter"
+else not_ok "iTerm: the stored plist is unchanged by the clean filter" "git add --renormalize linked/iterm2/com.googlecode.iterm2.plist (with the filter set up) fixes it"; fi
 expect_none "iTerm: Base inherits from iTerm defaults" "$(jqp '.[] | select(.Name == "Base")
   | select(."Dynamic Profile Parent Name" != "iTerm defaults" or ."Dynamic Profile Parent GUID" != "B45E0000-0000-4000-8000-000000000000") | .Name')"
 

@@ -1,8 +1,10 @@
 #!/bin/bash
 # macOS settings: terminfo entries for italics/true colour, iTerm2's prefs folder and the
 # `defaults write` settings of each enabled group (.chezmoidata/macos.yaml). chezmoi re-runs this
-# script whenever its rendered content or a terminfo file changes. Quit iTerm2 before it runs, or
-# iTerm overwrites its settings on quit.
+# script whenever its rendered content or a terminfo file changes. iTerm2 settings (other than
+# NoSync* and the prefs-folder keys) belong in linked/iterm2's plist: at launch iTerm replaces them all
+# with the plist's values, so one written here while iTerm is quit only lasts if the plist has it too;
+# while iTerm runs, iTerm saves it into the plist on quit.
 {{- range $f := list "xterm-256color-italic" "tmux-256color" }}
 # {{ $f }}: {{ include (printf "linked/iterm2/terminfo/%s.terminfo" $f) | sha256sum }}
 {{- end }}
@@ -17,6 +19,9 @@ done
 # iTerm2 reads (and writes) its settings in the repo's linked/iterm2 folder
 defaults write com.googlecode.iterm2 LoadPrefsFromCustomFolder -bool true
 defaults write com.googlecode.iterm2 PrefsCustomFolder -string {{ printf "%s/linked/iterm2" .chezmoi.sourceDir | quote }}
+# and saves a copy of every dynamic profile into the plist, which git strips (ADR 0008, .gitattributes)
+git -C {{ .chezmoi.sourceDir | quote }} config filter.iterm-plist.clean bin/iterm-plist-clean.sh
+git -C {{ .chezmoi.sourceDir | quote }} config filter.iterm-plist.required true
 {{- end }}
 {{- range $group, $settings := .macos.defaults }}{{ if index $.groups $group }}
 

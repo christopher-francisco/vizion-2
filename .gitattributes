@@ -1,0 +1,3 @@
+# iTerm saves a copy of every dynamic profile into its main plist; git stores it without them (ADR 0008).
+# The filter is set up by .chezmoiscripts/run_onchange_after_30-macos.sh.tmpl.
+linked/iterm2/com.googlecode.iterm2.plist filter=iterm-plist

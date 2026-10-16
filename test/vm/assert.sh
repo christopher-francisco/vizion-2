@@ -85,6 +85,8 @@ if [ "$(data '{{ .groups.gui }}')" = true ]; then
   else
     not_ok "iTerm: prefs folder is the repo's linked/iterm2" "$folder"
   fi
+  check "iTerm: git strips dynamic profiles from the plist (clean filter set up)" \
+    test "$(git -C "$src" config filter.iterm-plist.clean)" = bin/iterm-plist-clean.sh
   wrong=
   for f in "$src"/linked/iterm2/DynamicProfiles/*.json; do
     link="$HOME/Library/Application Support/iTerm2/DynamicProfiles/$(basename "$f")"

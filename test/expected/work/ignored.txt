@@ -1,6 +1,7 @@
 .oh-my-zsh/cache
 CLAUDE.md
 README.md
+bin
 docs
 linked
 test

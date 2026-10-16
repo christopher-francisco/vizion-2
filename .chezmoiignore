@@ -1,4 +1,6 @@
 # Repo-only files, never applied to $HOME. Patterns match target paths.
+bin
+bin/**
 CLAUDE.md
 README.md
 docs

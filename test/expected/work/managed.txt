@@ -3,6 +3,7 @@
 .chezmoiscripts/20-runtimes.sh
 .chezmoiscripts/25-vscode-extensions.sh
 .chezmoiscripts/30-macos.sh
+.chezmoiscripts/35-iterm-restart.sh
 .chezmoiscripts/40-plugins.sh
 .chezmoiscripts/50-gh-auth.sh
 .chezmoiscripts/55-work-push-token.sh
