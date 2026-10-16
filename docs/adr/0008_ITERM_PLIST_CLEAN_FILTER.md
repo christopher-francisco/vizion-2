@@ -17,7 +17,7 @@ So any real setting change (one in the Settings window; iTerm's own, such as fal
 | | **Git clean filter** | Strip on `chezmoi apply` | Detect only (test + README) |
 |---|---|---|---|
 | Copies reach a commit | Never | Between applies, if committed | Unless the test is run first |
-| `git status` after a copies-only save | Clean | Modified | Modified |
+| `git status` after a copies-only save | Listed as modified, empty diff (corrected 2026-10-16, see Consequences) | Modified | Modified |
 | Real setting changes | Committed as usual | Committed as usual | Committed as usual |
 | Code | 30-line `plutil` script, two `git config` lines | Same script in a `run_` script | None |
 | Working copy | Keeps the copies until cleaned | Cleaned on apply | Restored by hand |
@@ -29,6 +29,7 @@ A git clean filter. `.gitattributes` sets `filter=iterm-plist` on `linked/iterm2
 ## Consequences
 
 - The working copy may still hold the copies, and iTerm reads them at its next launch (not checked whether that has any effect: the dynamic profile files load over them by GUID). `bin/iterm-plist-clean.sh <plist>`, with iTerm quit, cleans it in place.
+- `git status` lists the plist as modified whenever its size differs from the size recorded at the last `git add`, without running the filter: a copies-only save, or an in-place clean after the copies were staged through. `git diff` is empty; `git add` stages nothing and clears it. (Found 2026-10-16 after the first in-place clean; first written here as "clean".)
 - The committed plist was converted once to `plutil`'s layout (`1` not `1.0`, 17-digit reals).
 - A clone without the filter set up (no `chezmoi apply` yet) stores the copies raw; `test/host/45-iterm.sh` fails when the stored plist isn't already clean.
 - iTerm also adds its own defaults to `iTerm defaults` (`Command`, `Jobs to Ignore`, …) on a save. They're real settings and get committed; `Base` sets each of them, so nothing inherits them.
