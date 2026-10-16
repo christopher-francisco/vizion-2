@@ -4315,7 +4315,7 @@
 		</dict>
 	</dict>
 	<key>Default Bookmark Guid</key>
-	<string>BEAE0CE8-D20D-4855-AA36-8089B04D54EE</string>
+	<string>B45E0000-0000-4000-8000-000000000002</string>
 	<key>EnableDivisionView</key>
 	<false/>
 	<key>EnableProxyIcon</key>
@@ -4348,6 +4348,19 @@
 	<true/>
 	<key>HotkeyModifiers</key>
 	<integer>524288</integer>
+	<key>New Bookmarks</key>
+	<array>
+		<dict>
+			<key>Guid</key>
+			<string>B45E0000-0000-4000-8000-000000000000</string>
+			<key>Name</key>
+			<string>iTerm defaults</string>
+			<key>Tags</key>
+			<array>
+				<string>base</string>
+			</array>
+		</dict>
+	</array>
 	<key>OnlyWhenMoreTabs</key>
 	<false/>
 	<key>PasteTabToStringTabStopSize</key>

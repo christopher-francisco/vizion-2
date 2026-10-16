@@ -1,0 +1,24 @@
+{{- /* "This Mac": the default profile (Default Bookmark Guid in the slim plist), whose parent is the
+size profile picked on first run (iterm.defaultProfile). Rendered, not linked: it differs per
+machine, holds no settings of its own and isn't rewritable. Loads last (zz-), after its parent.
+ADR 0006, docs/requirements/0.2.0_ITERM_PROFILES.md. */ -}}
+{{- $name := .iterm.defaultProfile -}}
+{{- $guid := "" -}}
+{{- range joinPath .chezmoi.sourceDir "linked/iterm2/DynamicProfiles/*.json" | glob -}}
+{{-   range (include . | fromJson).Profiles -}}
+{{-     if eq .Name $name }}{{ $guid = .Guid }}{{ end -}}
+{{-   end -}}
+{{- end -}}
+{{- if not $guid }}{{ fail (printf "iterm.defaultProfile %q is not a profile in linked/iterm2/DynamicProfiles" $name) }}{{ end -}}
+{
+  "Profiles": [
+    {
+      "Name": "This Mac",
+      "Guid": "B45E0000-0000-4000-8000-000000000002",
+      "Dynamic Profile Parent Name": {{ $name | toJson }},
+      "Dynamic Profile Parent GUID": {{ $guid | toJson }},
+      "Tags": [],
+      "Rewritable": false
+    }
+  ]
+}

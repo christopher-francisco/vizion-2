@@ -88,6 +88,14 @@ if [ "$(data '{{ .groups.gui }}')" = true ]; then
     [ "$(readlink "$link")" = "$f" ] || wrong+="$(basename "$f")"$'\n'
   done
   missing "iTerm: every Dynamic Profiles file linked" "${wrong%$'\n'}"
+  # This Mac, the default profile, is rendered per machine (ADR 0006): a plain file, not a link.
+  this_mac="$HOME/Library/Application Support/iTerm2/DynamicProfiles/zz-default.json"
+  parent=$(jq -r '.Profiles[0]."Dynamic Profile Parent Name"' "$this_mac" 2>&1)
+  if [ ! -L "$this_mac" ] && [ "$parent" = "$(data '{{ .iterm.defaultProfile }}')" ]; then
+    ok "iTerm: This Mac inherits from the first-run answer ($parent)"
+  else
+    not_ok "iTerm: This Mac inherits from the first-run answer" "$parent"
+  fi
 
   want=$(data '{{ range .packages.gui.vscode }}{{ . | lower }}{{ "\n" }}{{ end }}' | grep -v '^$' | sort)
   have=$(code --list-extensions 2>/dev/null | tr '[:upper:]' '[:lower:]' | sort)

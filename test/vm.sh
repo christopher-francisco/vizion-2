@@ -46,7 +46,10 @@ if [ "$from_github" = 0 ]; then
   src=$dir/src
   git clone -q "$REPO" "$src" || fatal "snapshot the working tree"
   (cd "$REPO" && git ls-files -z -co --exclude-standard) | rsync -a --from0 --files-from=- "$REPO/" "$src/"
-  (cd "$REPO" && git ls-files -z -d) | (cd "$src" && xargs -0 rm -f --)
+  # Files in HEAD but not in the working tree: deleted or renamed, staged or not.
+  (cd "$REPO" && git diff -z --name-only --no-renames --diff-filter=D HEAD) | (cd "$src" && xargs -0 rm -f --)
+  # and the folders they leave empty (git tracks none), which chezmoi would still read as targets.
+  find "$src" -path "$src/.git" -prune -o -type d -empty -delete
   git -C "$src" add -A
   git -C "$src" -c user.name=test -c user.email=test@example.com commit -q -m "Working tree under test" > /dev/null 2>&1
   git -C "$src" remote set-url origin https://github.com/christopher-francisco/vizion-2.git

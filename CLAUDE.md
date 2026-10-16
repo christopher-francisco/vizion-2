@@ -14,4 +14,4 @@ Rewrite of [vizion](../vizion), the script that provisions a brand new Mac with 
 
 ## Current focus
 
-Setup is built and VM-tested (ADRs 0001–0004, `docs/requirements/0.1.0_*`). Regression test suite (ADR 0005, `0.1.0_TEST_SUITE.md`) built through the guided steps (tasks 27–29); next: task 32 (iTerm profile), then task 30 (more scenarios).
+Setup is built and VM-tested (ADRs 0001–0004, `docs/requirements/0.1.0_*`). Regression test suite (ADR 0005, `0.1.0_TEST_SUITE.md`) built through the guided steps (tasks 27–29); next: task 35 (iTerm profile layout, ADR 0006, `0.2.0_ITERM_PROFILES.md`; also fixes task 32's cause), then task 30 (more scenarios).

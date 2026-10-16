@@ -4,7 +4,6 @@ vim.cmd.colorscheme(colorscheme)
 local opt = vim.opt
 
 -- ui
-opt.background = vim.env.THEME or "dark"
 opt.cmdheight = 0
 opt.laststatus = 3
 opt.number = true

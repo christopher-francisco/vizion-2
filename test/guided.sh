@@ -127,11 +127,13 @@ wait_apply 2 "apply again on the VM's terminal exits 0" 900 &&
 
 # --- T4.6: what only shows on screen
 if [ "$(vm_ssh "$ip" 'PATH=$HOME/.local/bin:$PATH chezmoi execute-template "{{ .groups.gui }}"')" = true ]; then
-  default_guid=$(plutil -extract "Default Bookmark Guid" raw "$REPO/linked/iterm2/com.googlecode.iterm2.plist")
-  default_name=$(jq -r --arg g "$default_guid" '.Profiles[] | select(.Guid == $g) | .Name' "$REPO"/linked/iterm2/DynamicProfiles/*.json)
+  # The default is "This Mac", which inherits from the size profile answered on first run (ADR 0006).
+  parent=$(vm_ssh "$ip" 'PATH=$HOME/.local/bin:$PATH chezmoi execute-template "{{ .iterm.defaultProfile }}"')
   vm_ssh "$ip" 'open -a iTerm'
-  ask "iTerm opens on the \"$default_name\" profile" \
-    "iTerm just opened in the VM. Session → Edit Session… shows the window's profile."
+  ask "iTerm opens on the \"This Mac\" profile, at the size of $parent" \
+    "iTerm just opened in the VM. Session → Edit Session… shows the window's profile (This Mac); its Text tab shows the font size (${parent##* }pt)."
+  ask "iTerm's colours follow the macOS appearance" \
+    "Leave that iTerm window open and switch the VM between Light and Dark in System Settings → Appearance: the window's colours should change each time (Tokyonight Day / Night)."
   ask "Option+Left/Right jump by word in iTerm" \
     "In that iTerm window, type: echo one two three, then press Option+Left twice and Option+Right once."
   profiles=$(jq -r '[.profiles[].name] | join(", ")' "$REPO/linked/karabiner/karabiner.json")

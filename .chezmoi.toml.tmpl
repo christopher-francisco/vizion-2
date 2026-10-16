@@ -11,7 +11,8 @@ sourceDir = {{ .chezmoi.sourceDir | quote }}
   [data.groups]
     core = true
     dev = true
-    gui = {{ promptBoolOnce . "groups.gui" "Install GUI apps (iTerm, VS Code, Karabiner…)" true }}
+    {{- $gui := promptBoolOnce . "groups.gui" "Install GUI apps (iTerm, VS Code, Karabiner…)" true }}
+    gui = {{ $gui }}
     personal = {{ promptBoolOnce . "groups.personal" "Install personal apps (1Password, Spotify, Blender…)" (not $isWork) }}
     mas = {{ promptBoolOnce . "groups.mas" "Install Mac App Store apps (needs Apple ID sign-in)" (not $isWork) }}
     {{- $enterprise := promptBoolOnce . "groups.enterprise" "Log gh in to a GitHub Enterprise host" $isWork }}
@@ -20,6 +21,11 @@ sourceDir = {{ .chezmoi.sourceDir | quote }}
     enterpriseHost = {{ if $enterprise }}{{ promptStringOnce . "github.enterpriseHost" "GitHub Enterprise host (e.g. github.example.com)" | quote }}{{ else }}""{{ end }}
   [data.machine]
     crowdstrike = {{ promptBoolOnce . "machine.crowdstrike" "Is CrowdStrike installed (inline tmux navigator bindings)" $isWork }}
+  [data.iterm]
+    {{- /* iTerm's default profile, "This Mac", inherits from this size profile (ADR 0006). Keep the list
+    in step with linked/iterm2/DynamicProfiles (test/host/45-iterm.sh checks it). */}}
+    {{- $sizes := list "Tokyonight 11" "Tokyonight 13" "Tokyonight 16" "Tokyonight 20" "Everforest 11" "Everforest 13" "Everforest 16" "Everforest 20" }}
+    defaultProfile = {{ if $gui }}{{ promptChoiceOnce . "iterm.defaultProfile" "iTerm default profile (Tokyonight 16 for a big monitor)" $sizes (ternary "Tokyonight 16" "Tokyonight 11" $isWork) | quote }}{{ else }}""{{ end }}
 
 [git]
   autoCommit = {{ not $isWork }}

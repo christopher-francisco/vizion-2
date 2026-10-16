@@ -12,4 +12,3 @@ vim.opt.spelloptions:append("noplainbuffer")
 vim.opt.statuscolumn = "%=%{v:relnum?v:relnum:v:lnum} %s%C"
 vim.opt.sessionoptions = { "buffers", "curdir", "tabpages", "winsize", "help", "globals", "skiprtp", "folds" }
 vim.opt.wildmode = "longest,full"
-vim.opt.background = vim.env.THEME or "dark"
