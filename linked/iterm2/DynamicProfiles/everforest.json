@@ -408,8 +408,20 @@
       "Tags": [
         "everforest",
         "retina",
-        "2k",
         "studio-display"
+      ],
+      "Rewritable": true
+    },
+    {
+      "Name": "Everforest 13 tight",
+      "Guid": "B45E0000-0000-4000-8000-000000000025",
+      "Dynamic Profile Parent Name": "Everforest",
+      "Dynamic Profile Parent GUID": "B45E0000-0000-4000-8000-000000000020",
+      "Normal Font": "MesloLGSDZNFM-Regular 13",
+      "Vertical Spacing": 1.55,
+      "Tags": [
+        "everforest",
+        "2k"
       ],
       "Rewritable": true
     },
@@ -422,8 +434,20 @@
       "Vertical Spacing": 1.9,
       "Tags": [
         "everforest",
+        "4k"
+      ],
+      "Rewritable": true
+    },
+    {
+      "Name": "Everforest 16 tight",
+      "Guid": "B45E0000-0000-4000-8000-000000000026",
+      "Dynamic Profile Parent Name": "Everforest",
+      "Dynamic Profile Parent GUID": "B45E0000-0000-4000-8000-000000000020",
+      "Normal Font": "MesloLGSDZNFM-Regular 16",
+      "Vertical Spacing": 1.7,
+      "Tags": [
+        "everforest",
         "retina",
-        "4k",
         "studio-display"
       ],
       "Rewritable": true

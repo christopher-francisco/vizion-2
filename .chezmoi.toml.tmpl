@@ -24,7 +24,7 @@ sourceDir = {{ .chezmoi.sourceDir | quote }}
   [data.iterm]
     {{- /* iTerm's default profile, "This Mac", inherits from this size profile (ADR 0006). Keep the list
     in step with linked/iterm2/DynamicProfiles (test/host/45-iterm.sh checks it). */}}
-    {{- $sizes := list "Tokyonight 11" "Tokyonight 13" "Tokyonight 16" "Tokyonight 20" "Everforest 11" "Everforest 13" "Everforest 16" "Everforest 20" }}
+    {{- $sizes := list "Tokyonight 11" "Tokyonight 13" "Tokyonight 13 tight" "Tokyonight 16" "Tokyonight 16 tight" "Tokyonight 20" "Everforest 11" "Everforest 13" "Everforest 13 tight" "Everforest 16" "Everforest 16 tight" "Everforest 20" }}
     defaultProfile = {{ if $gui }}{{ promptChoiceOnce . "iterm.defaultProfile" "iTerm default profile (Tokyonight 16 for a big monitor)" $sizes (ternary "Tokyonight 16" "Tokyonight 11" $isWork) | quote }}{{ else }}""{{ end }}
 
 [git]

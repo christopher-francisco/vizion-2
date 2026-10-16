@@ -415,8 +415,20 @@
       "Tags": [
         "tokyonight",
         "retina",
-        "2k",
         "studio-display"
+      ],
+      "Rewritable": true
+    },
+    {
+      "Name": "Tokyonight 13 tight",
+      "Guid": "489605E0-78FD-4798-A5C9-4D46FB416898",
+      "Dynamic Profile Parent Name": "Tokyonight",
+      "Dynamic Profile Parent GUID": "B45E0000-0000-4000-8000-000000000010",
+      "Normal Font": "IntoneMonoNF 13",
+      "Vertical Spacing": 1.33,
+      "Tags": [
+        "tokyonight",
+        "2k"
       ],
       "Rewritable": true
     },
@@ -429,8 +441,20 @@
       "Vertical Spacing": 1.7,
       "Tags": [
         "tokyonight",
+        "4k"
+      ],
+      "Rewritable": true
+    },
+    {
+      "Name": "Tokyonight 16 tight",
+      "Guid": "05830071-9D58-4F53-B0FE-362B3FC5443A",
+      "Dynamic Profile Parent Name": "Tokyonight",
+      "Dynamic Profile Parent GUID": "B45E0000-0000-4000-8000-000000000010",
+      "Normal Font": "IntoneMonoNF 16",
+      "Vertical Spacing": 1.5,
+      "Tags": [
+        "tokyonight",
         "retina",
-        "4k",
         "studio-display"
       ],
       "Rewritable": true
