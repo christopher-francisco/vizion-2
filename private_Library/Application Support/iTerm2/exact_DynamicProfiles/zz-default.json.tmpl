@@ -1,22 +1,28 @@
-{{- /* "This Mac": the default profile (Default Bookmark Guid in the slim plist), whose parent is the
-size profile picked on first run (iterm.defaultProfile). Rendered, not linked: it differs per
-machine, holds no settings of its own and isn't rewritable. Loads last (zz-), after its parent.
-ADR 0006, docs/requirements/0.2.0_ITERM_PROFILES.md. */ -}}
-{{- $name := .iterm.defaultProfile -}}
-{{- $guid := "" -}}
+{{- /* "This Mac": the default profile (Default Bookmark Guid in the slim plist). Its parent is the size
+profile of the first-run theme tagged with the first-run monitor: the smaller or bigger of the two.
+Rendered, not linked: it differs per machine, holds no settings of its own and isn't rewritable.
+Loads last (zz-), after its parent. ADR 0006, docs/requirements/0.2.0_ITERM_PROFILES.md. */ -}}
+{{- $theme := .iterm.theme }}{{ $monitor := .iterm.monitor -}}
+{{- $sizes := list -}}
 {{- range joinPath .chezmoi.sourceDir "linked/iterm2/DynamicProfiles/*.json" | glob -}}
 {{-   range (include . | fromJson).Profiles -}}
-{{-     if eq .Name $name }}{{ $guid = .Guid }}{{ end -}}
+{{-     if and (eq (lower (get . "Dynamic Profile Parent Name")) $theme) (has $monitor (get . "Tags" | default list)) -}}
+{{-       $sizes = append $sizes . -}}
+{{-     end -}}
 {{-   end -}}
 {{- end -}}
-{{- if not $guid }}{{ fail (printf "iterm.defaultProfile %q is not a profile in linked/iterm2/DynamicProfiles" $name) }}{{ end -}}
+{{- if ne (len $sizes) 2 }}{{ fail (printf "iTerm: expected a small and a big %s profile tagged %s, found %d" $theme $monitor (len $sizes)) }}{{ end -}}
+{{- $a := index $sizes 0 }}{{ $b := index $sizes 1 -}}
+{{- $aPt := (get $a "Normal Font" | splitList " " | last | float64) }}{{ $bPt := (get $b "Normal Font" | splitList " " | last | float64) -}}
+{{- $small := $a }}{{ $big := $b }}{{ if gt $aPt $bPt }}{{ $small = $b }}{{ $big = $a }}{{ end -}}
+{{- $parent := ternary $big $small (eq .iterm.size "big") -}}
 {
   "Profiles": [
     {
       "Name": "This Mac",
       "Guid": "B45E0000-0000-4000-8000-000000000002",
-      "Dynamic Profile Parent Name": {{ $name | toJson }},
-      "Dynamic Profile Parent GUID": {{ $guid | toJson }},
+      "Dynamic Profile Parent Name": {{ $parent.Name | toJson }},
+      "Dynamic Profile Parent GUID": {{ $parent.Guid | toJson }},
       "Tags": [],
       "Rewritable": false
     }

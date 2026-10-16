@@ -91,10 +91,13 @@ if [ "$(data '{{ .groups.gui }}')" = true ]; then
   # This Mac, the default profile, is rendered per machine (ADR 0006): a plain file, not a link.
   this_mac="$HOME/Library/Application Support/iTerm2/DynamicProfiles/zz-default.json"
   parent=$(jq -r '.Profiles[0]."Dynamic Profile Parent Name"' "$this_mac" 2>&1)
-  if [ ! -L "$this_mac" ] && [ "$parent" = "$(data '{{ .iterm.defaultProfile }}')" ]; then
-    ok "iTerm: This Mac inherits from the first-run answer ($parent)"
+  theme=$(data '{{ .iterm.theme }}') monitor=$(data '{{ .iterm.monitor }}')
+  tagged=$(jq -r --arg n "$parent" --arg m "$monitor" '.Profiles[] | select(.Name == $n and (.Tags | index($m))) | ."Dynamic Profile Parent Name"' \
+    "$src"/linked/iterm2/DynamicProfiles/*.json | tr '[:upper:]' '[:lower:]')
+  if [ ! -L "$this_mac" ] && [ "$tagged" = "$theme" ]; then
+    ok "iTerm: This Mac inherits from a $theme profile for $monitor ($parent)"
   else
-    not_ok "iTerm: This Mac inherits from the first-run answer" "$parent"
+    not_ok "iTerm: This Mac inherits from a $theme profile for $monitor" "$parent"
   fi
 
   want=$(data '{{ range .packages.gui.vscode }}{{ . | lower }}{{ "\n" }}{{ end }}' | grep -v '^$' | sort)

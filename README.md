@@ -33,7 +33,7 @@ Answers are saved in `~/.config/chezmoi/chezmoi.toml` and asked only once. The p
 | Install Mac App Store apps | yes | no |
 | Log gh in to a GitHub Enterprise host (then: which host) | no | yes |
 | Is CrowdStrike installed (inline tmux navigator bindings)? | no | yes |
-| iTerm default profile (only with GUI apps) | Tokyonight 11 | Tokyonight 16 |
+| iTerm colour scheme, main monitor, font size on it (small/big): iTerm's default profile, only with GUI apps | tokyonight, retina, big | tokyonight, 4k, big |
 
 To change an answer later: `chezmoi init --prompt`, then `chezmoi apply`.
 
@@ -68,7 +68,7 @@ The clone's path is saved as `sourceDir`, so chezmoi keeps using it.
 - **Both Neovim configs are owned exactly:** `chezmoi apply` deletes any file in `~/.config/nvim` or `~/.config/nvim-legacy` that isn't in the repo. Add a new file with `chezmoi add <file>` before the next apply.
 - **Files apps rewrite** are symlinks into `linked/`, so the app's changes land straight in the repo: both Neovim `lazy-lock.json` files, VS Code `settings.json` and `keybindings.json`, the Karabiner folder and the iTerm2 Dynamic Profiles. iTerm2's global settings are read from `linked/iterm2` directly.
 - **iTerm2:** change profiles in iTerm's UI; the change is written to `linked/iterm2/DynamicProfiles/` (ADR 0004). Profiles inherit in levels (ADR 0006): `Base` (keys, terminal, behaviour) → a theme (`Tokyonight`, `Everforest`: light and dark colours, following the macOS appearance) → a size (`Tokyonight 11/13/16/20`, plus `13 tight`/`16 tight` with less line spacing, …: font and line spacing). Change colours on the theme and sizes on the size profile; a change to `Base` affects all of them. Pick a size for a monitor from Profiles → `retina`/`2k`/`4k`/`studio-display`.
-- **iTerm2 default profile:** new windows open in `This Mac`, which inherits from the size picked on first run. To switch, set `iterm.defaultProfile` in `~/.config/chezmoi/chezmoi.toml` to another size profile and `chezmoi apply`; iTerm picks it up without a restart. `This Mac` itself isn't saved from the UI: edit the profile it inherits from.
+- **iTerm2 default profile:** new windows open in `This Mac`, which inherits from the profile of your colour scheme tagged with your main monitor, small or big (first-run answers `iterm.theme`, `iterm.monitor`, `iterm.size`). To switch, change them in `~/.config/chezmoi/chezmoi.toml` and `chezmoi apply`; iTerm picks it up without a restart. `This Mac` itself isn't saved from the UI: edit the profile it inherits from.
 - **Committing:** on personal machines chezmoi commits and pushes after every `chezmoi edit`/`re-add`. On the work laptop that's off: `chezmoi cd`, review, commit and push by hand. Changes apps make to `linked/` files are never auto-committed: commit them from `chezmoi cd`.
 - `chezmoi cd` (alias `vizion`) opens a shell in the repo.
 
@@ -77,7 +77,7 @@ The clone's path is saved as `sourceDir`, so chezmoi keeps using it.
 - **A Homebrew package, cask or App Store app:** add it to its group in `.chezmoidata/packages.yaml`. The next `chezmoi apply` installs it. Removing an entry uninstalls nothing; use `brew bundle cleanup` for that.
 - **A VS Code extension:** add its ID under `packages.gui.vscode` (`code --list-extensions` prints them). VS Code Settings Sync stays off on every machine: the repo is the source of truth.
 - **A macOS setting:** add a `{domain, key, type, value}` entry to its group in `.chezmoidata/macos.yaml`.
-- **An iTerm2 theme:** a new file in `linked/iterm2/DynamicProfiles/` with the theme profile (parent `Base`, `(Light)`/`(Dark)` colours) first, then its four sizes with the same monitor tags; every profile names its parent by both `Dynamic Profile Parent Name` and `Dynamic Profile Parent GUID`. Add a matching `symlink_<file>.json.tmpl` under `private_Library/Application Support/iTerm2/exact_DynamicProfiles/` and the sizes to the `iterm.defaultProfile` choices in `.chezmoi.toml.tmpl`. `test/run.sh --host-only` checks all of this. Profiles created in iTerm's UI are regular profiles in the main plist, not dynamic ones.
+- **An iTerm2 theme:** a new file in `linked/iterm2/DynamicProfiles/` with the theme profile (parent `Base`, `(Light)`/`(Dark)` colours) first, then its four sizes with the same monitor tags; every profile names its parent by both `Dynamic Profile Parent Name` and `Dynamic Profile Parent GUID`. Add a matching `symlink_<file>.json.tmpl` under `private_Library/Application Support/iTerm2/exact_DynamicProfiles/` (the first-run theme and monitor choices are read from the profile files). `test/run.sh --host-only` checks all of this. Profiles created in iTerm's UI are regular profiles in the main plist, not dynamic ones.
 - **A language runtime:** add it to `dot_tool-versions`.
 - **Machine-specific shell lines:** put them in `~/.zshrc.aliases.local` (not managed).
 

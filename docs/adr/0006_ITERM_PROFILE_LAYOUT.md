@@ -1,6 +1,6 @@
 # ADR 0006 — iTerm2 profiles: Base → theme → size, and a default per machine
 
-- **Status:** Accepted (2026-10-16). Supersedes ADR 0002's profile layout ("`Base` + one file per colour scheme, each profile sets its colours, font, size and spacing"). The rest of ADR 0002 (Dynamic Profiles, slim main plist) and ADR 0004 (rewritable, symlinked) stand.
+- **Status:** Accepted (2026-10-16). Supersedes ADR 0002's profile layout ("`Base` + one file per colour scheme, each profile sets its colours, font, size and spacing"). The rest of ADR 0002 (Dynamic Profiles, slim main plist) and ADR 0004 (rewritable, symlinked) stand. Detail changed the same day, see `0.2.0_ITERM_PROFILES.md`: `13 tight`/`16 tight` size variants, and the default picked by three answers (theme, main monitor, small/big) instead of `iterm.defaultProfile`.
 - **Date:** 2026-10-16
 
 ## Context

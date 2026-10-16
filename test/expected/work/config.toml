@@ -16,7 +16,9 @@
   [data.machine]
     crowdstrike = true
   [data.iterm]
-    defaultProfile = "Tokyonight 16"
+    theme = "tokyonight"
+    monitor = "4k"
+    size = "big"
 
 [git]
   autoCommit = false

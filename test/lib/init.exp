@@ -69,10 +69,14 @@ answer "Install Mac App Store apps" "" bool
 answer "Log gh in to a GitHub Enterprise host" "" bool
 if {$profile eq "work"} { answer "GitHub Enterprise host" $host }
 answer "CrowdStrike" "" bool
-# A choice field: Enter alone takes the default. Only asked with the GUI apps.
+# Choice fields: Enter alone takes the default. Only asked with the GUI apps.
 set gui true
 foreach {q v} $overrides { if {[string first $q "Install GUI apps"] == 0} { set gui $v } }
-if {$gui} { answer "iTerm default profile" "" }
+if {$gui} {
+  answer "iTerm colour scheme" ""
+  answer "Main monitor" ""
+  answer "Font size on that monitor" ""
+}
 
 # Anything after the prompts (e.g. the rest of a bootstrap) runs untimed.
 expect_before

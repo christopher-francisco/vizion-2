@@ -46,18 +46,30 @@ uneven=$(jqp '[.[] | select(."Dynamic Profile Parent Name" == "Base") | .Name] a
   | "\($m): \($t): \(map(.Name))"')
 expect_none "iTerm: every monitor tag has two sizes of each theme" "$uneven"
 
-# The first-run choice list is exactly the size profiles, and This Mac renders for each test profile.
-sizes=$(jqp '[.[] | select(."Dynamic Profile Parent Name" == "Base") | .Name] as $themes
-  | .[] | select(."Dynamic Profile Parent Name" as $n | $themes | index($n)) | .Name' | sort)
-choices=$(sed -n 's/.*\$sizes := list \(.*\) }}$/\1/p' "$REPO/.chezmoi.toml.tmpl" | tr ' ' '\n' | paste -sd' ' - |
-  grep -o '"[^"]*"' | tr -d '"' | sort)
-if [ -n "$choices" ] && [ "$choices" = "$sizes" ]; then ok "iTerm: the default-profile choices are the size profiles"
-else not_ok "iTerm: the default-profile choices are the size profiles" "$(diff <(echo "$choices") <(echo "$sizes"))"; fi
+# This Mac renders for every theme × monitor × size the first-run questions offer, and for each test
+# profile inherits from the size its answers pick.
+monitors=$(jqp '[.[] | select(."Dynamic Profile Parent Name" == "Base") | .Name] as $themes
+  | [.[] | select(."Dynamic Profile Parent Name" as $n | $themes | index($n)) | .Tags[1:][]] | unique[]')
+template="$REPO/private_Library/Application Support/iTerm2/exact_DynamicProfiles/zz-default.json.tmpl"
+bad=
+for theme in $(jqp '.[] | select(."Dynamic Profile Parent Name" == "Base") | .Name | ascii_downcase'); do
+  for monitor in $monitors; do
+    for size in small big; do
+      printf '[data.iterm]\n  theme = "%s"\n  monitor = "%s"\n  size = "%s"\n' "$theme" "$monitor" "$size" > "$WORK/iterm-combo.toml"
+      out=$(chezmoi --source "$REPO" --config "$WORK/iterm-combo.toml" execute-template < "$template" 2>&1)
+      parent=$(jq -r '.Profiles[0]."Dynamic Profile Parent Name"' <<< "$out" 2>/dev/null) || parent=${out##*error calling fail: }
+      # small → the lower point size of the two for that theme and monitor, big → the higher
+      want=$(jqp "[.[] | select((.\"Dynamic Profile Parent Name\" | ascii_downcase) == \"$theme\" and (.Tags | index(\"$monitor\")))]
+        | sort_by(.\"Normal Font\" | split(\" \")[-1] | tonumber) | if \"$size\" == \"small\" then first else last end | .Name")
+      [ "$parent" = "$want" ] || bad+="$theme $monitor $size: got $parent, want $want"$'\n'
+    done
+  done
+done
+expect_none "iTerm: This Mac renders the right size for every theme, monitor and size" "${bad%$'\n'}"
 for p in "${PROFILES[@]}"; do
   f="$WORK/$p/archive/Library/Application Support/iTerm2/DynamicProfiles/zz-default.json"
   [ -f "$f" ] || { not_ok "$p: iTerm: This Mac rendered" "no ${f#"$WORK"/}"; continue; }
-  want=$(jq -r '.iterm.defaultProfile' <<< "$(cz "$p" data --format json)")
-  got=$(jq -c '.Profiles[0] | [.Name, .Guid, ."Dynamic Profile Parent Name", ."Dynamic Profile Parent GUID", .Tags]' "$f")
-  guid=$(jqp ".[] | select(.Name == \"$want\") | .Guid")
-  check "$p: iTerm: This Mac inherits from $want" test "$got" = "[\"This Mac\",\"$this_mac\",\"$want\",\"$guid\",[]]"
+  answers=$(cz "$p" execute-template '{{ .iterm.theme }} {{ .iterm.monitor }} {{ .iterm.size }}')
+  got=$(jq -c '.Profiles[0] | [.Name, .Guid, .Tags]' "$f")
+  check "$p: iTerm: This Mac is the default, rendered for $answers" test "$got" = "[\"This Mac\",\"$this_mac\",[]]"
 done

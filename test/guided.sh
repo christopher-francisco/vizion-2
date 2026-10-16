@@ -128,10 +128,10 @@ wait_apply 2 "apply again on the VM's terminal exits 0" 900 &&
 # --- T4.6: what only shows on screen
 if [ "$(vm_ssh "$ip" 'PATH=$HOME/.local/bin:$PATH chezmoi execute-template "{{ .groups.gui }}"')" = true ]; then
   # The default is "This Mac", which inherits from the size profile answered on first run (ADR 0006).
-  parent=$(vm_ssh "$ip" 'PATH=$HOME/.local/bin:$PATH chezmoi execute-template "{{ .iterm.defaultProfile }}"')
+  parent=$(vm_ssh "$ip" 'jq -r ".Profiles[0].\"Dynamic Profile Parent Name\"" "$HOME/Library/Application Support/iTerm2/DynamicProfiles/zz-default.json"')
   vm_ssh "$ip" 'open -a iTerm'
   ask "iTerm opens on the \"This Mac\" profile, at the size of $parent" \
-    "iTerm just opened in the VM. Session → Edit Session… shows the window's profile (This Mac); its Text tab shows the font size (${parent##* }pt)."
+    "iTerm just opened in the VM. Session → Edit Session… shows the window's profile (This Mac); its Text tab shows the font size ($(grep -o '[0-9][0-9]*' <<< "$parent")pt)."
   ask "iTerm's colours follow the macOS appearance" \
     "Leave that iTerm window open and switch the VM between Light and Dark in System Settings → Appearance: the window's colours should change each time (Tokyonight Day / Night)."
   ask "Option+Left/Right jump by word in iTerm" \
