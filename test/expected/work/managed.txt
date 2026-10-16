@@ -59,7 +59,11 @@
 .config/nvim/lua/config/keymaps.lua
 .config/nvim/lua/config/lazy.lua
 .config/nvim/lua/config/options.lua
+.config/nvim/lua/config/status_colours.lua
 .config/nvim/lua/config/theme.lua
+.config/nvim/lua/lualine
+.config/nvim/lua/lualine/themes
+.config/nvim/lua/lualine/themes/vizion.lua
 .config/nvim/lua/plugins
 .config/nvim/lua/plugins/coding.lua
 .config/nvim/lua/plugins/editor.lua

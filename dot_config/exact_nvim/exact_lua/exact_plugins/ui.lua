@@ -52,11 +52,14 @@ return {
     },
   },
 
-  -- Lualine: restore custom sections
+  -- Lualine: looks like the tmux status bar (theme lualine/themes/vizion.lua, colours
+  -- config/status_colours.lua)
   {
     "nvim-lualine/lualine.nvim",
     opts = function(_, opts)
+      require("config.status_colours").setup()
       opts.options = vim.tbl_extend("force", opts.options or {}, {
+        theme = "vizion",
         component_separators = { left = " ", right = " " },
         section_separators = { left = " ", right = " " },
         globalstatus = true,
@@ -117,6 +120,7 @@ return {
             show_modified_status = true,
             max_length = vim.o.columns,
             symbols = { modified = "" },
+            tabs_color = { active = "VizionTabActive" },
           },
         },
       }

@@ -13,10 +13,12 @@ return {
     init = function() vim.g.tmux_navigator_disable_when_zoomed = 1 end,
   },
 
-  -- Custom tmux status bar components (used by lualine in ui.lua)
+  -- Custom tmux status bar components (used by lualine in ui.lua), in the tmux theme's colours
   {
     "christopher-francisco/tmux-status.nvim",
     lazy = true,
-    opts = {},
+    opts = {
+      colors = function() return require("config.status_colours").tmux_status() end,
+    },
   },
 }

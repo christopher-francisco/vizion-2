@@ -55,6 +55,31 @@ expect_none "Neovim: follow_terminal in a headless Neovim inside tmux: no errors
   nvim --clean --headless --cmd "lua package.loaded['config.theme'] = { default = 'tokyonight', backgrounds = {} }" \
   -c "lua dofile('$mod').setup()" +qa 2>&1)"
 
+# Neovim: the statusline's tmux colours (config/status_colours.lua) are the ones tmux gets from each
+# theme file, resolved here by the shell (docs/requirements/0.4.0_NEOVIM_STATUSLINE.md).
+mkdir -p "$WORK/status-home/.config/tmux" && ln -sfn "$themes" "$WORK/status-home/.config/tmux/themes"
+bad=
+for s in $schemes; do
+  for a in dark light; do
+    f=$themes/$s-$a.tmux.conf
+    [ -f "$f" ] || continue
+    want=$( (eval "$(grep -E '^[A-Za-z0-9_]+=' "$f")"
+      for o in text_selected text_unselected text_unselected_recent text_active text_secondary text_main; do
+        eval "printf '%s=%s\n' $o $(sed -n "s/^set -g @$o \([^ ]*\).*/\1/p" "$f")"
+      done) 2>&1)
+    got=$(HOME=$WORK/status-home nvim --clean --headless -l /dev/stdin 2>&1 <<EOF
+vim.g.colors_name, vim.o.background = "$s-x", "$a"
+local o = dofile("$REPO/dot_config/exact_nvim/exact_lua/exact_config/status_colours.lua").options()
+for _, k in ipairs({ "text_selected", "text_unselected", "text_unselected_recent", "text_active", "text_secondary", "text_main" }) do
+  io.write(k, "=", tostring(o[k]), "\n")
+end
+EOF
+)
+    [ "$got" = "$want" ] && ! grep -qv '=#[0-9a-fA-F]\{6\}$' <<< "$got" || bad+="$s-$a: got"$'\n'"$got"$'\n'"want"$'\n'"$want"$'\n'
+  done
+done
+expect_none "Neovim: statusline colours read from every tmux theme are tmux's" "${bad%$'\n'}"
+
 for p in "${PROFILES[@]}"; do
   arch=$WORK/$p/archive
   [ -d "$arch" ] || { skip "$p: colour schemes (not rendered)"; continue; }
