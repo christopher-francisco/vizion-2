@@ -1,6 +1,6 @@
 # iTerm profiles: themes, sizes and a default per machine
 
-- **Status:** Direction agreed (2026-10-16): three-level profiles, Tokyonight and Everforest only, one profile for light and dark, `THEME` dropped, per-machine default. Pending the checks under "To verify"; once they pass, write ADR 0006 (supersedes ADR 0002's profile layout) and promote this to `requirements/`.
+- **Status:** Direction agreed (2026-10-16): three-level profiles, Tokyonight and Everforest only, one profile for light and dark, `THEME` dropped, per-machine default. Verified in a VM on 2026-10-16 (see "Verified"), which added three rules to the design: `Base` gets a regular parent, every profile names its parent by name and GUID, and the per-machine profile is not called `Default`. Next: ADR 0006 (supersedes ADR 0002's profile layout), promote this to `requirements/`, build.
 
 ## Problem
 
@@ -13,6 +13,7 @@
 ### Three levels: Base → theme → size
 
 ```
+iTerm defaults               regular profile in the slim plist, fixed GUID, no settings; tag "base"
 Base                         keyboard, terminal, behaviour + the keys every profile repeats today
 ├─ Tokyonight                light + dark colours, font family; tag "base"
 │  ├─ Tokyonight 11          Normal Font + Vertical Spacing + monitor tags
@@ -21,8 +22,12 @@ Base                         keyboard, terminal, behaviour + the keys every prof
 │  └─ Tokyonight 20
 └─ Everforest                (same shape)
    └─ Everforest 11 … 20
-Default                      rendered per machine; parent = one size profile
+This Mac                     rendered per machine; parent = one size profile
 ```
+
+- **`iTerm defaults`** is a regular (not dynamic) profile, so it exists before any dynamic file loads, and its only job is to be `Base`'s parent. A dynamic profile without a parent inherits from *the default profile*: with a dynamic default, `Base` would inherit from `This Mac` → `Tokyonight 16` → `Tokyonight` → `Base` on every reload (see "Verified"). It also stops iTerm creating its own regular `Default` profile with a random GUID on each new machine.
+- **Every profile names its parent by both `Dynamic Profile Parent Name` and `Dynamic Profile Parent GUID`.** A child that sets only the name inherits its parent's parent GUID, and iTerm's rewrite then diffs against the wrong profile and copies the theme's colours into the size profile.
+- **Parents load first**: `00-base.json` first, `zz-` last, and within a file the theme before its sizes.
 
 - **Theme profiles** (`Tokyonight`, `Everforest`) hold only colours and the font family. They're parents, not meant to be opened, so they carry the tag `base` to sit in the same submenu as `Base`, out of the way.
 - **Size profiles** set `Normal Font` (family + size: iTerm keeps both in one string, so each theme has its own sizes) and `Vertical Spacing`, and are tagged with the monitors they're for. Named by point size, so the name says what you get.
@@ -60,7 +65,7 @@ iTerm 3.5+ keeps two colour sets in one profile (`Use Separate Colors for Light 
 
 ### Default per machine
 
-A `Default` dynamic profile with a fixed GUID, whose parent is chosen per machine. The shared plist always points at it, so its value never flips between machines.
+A `This Mac` dynamic profile with a fixed GUID, whose parent is chosen per machine. Not called `Default`: iTerm names its own regular profile that, and name lookups (AppleScript, `Dynamic Profile Parent Name`) would hit either. The shared plist always points at it, so its value never flips between machines.
 
 1. **First-run answer** in `.chezmoi.toml.tmpl`:
 
@@ -78,9 +83,10 @@ A `Default` dynamic profile with a fixed GUID, whose parent is chosen per machin
    {
      "Profiles": [
        {
-         "Name": "Default",
+         "Name": "This Mac",
          "Guid": "B45E0000-0000-4000-8000-000000000002",
          "Dynamic Profile Parent Name": {{ .iterm.defaultProfile | quote }},
+         "Dynamic Profile Parent GUID": {{ $guid | quote }},
          "Tags": [],
          "Rewritable": false
        }
@@ -88,9 +94,9 @@ A `Default` dynamic profile with a fixed GUID, whose parent is chosen per machin
    }
    ```
 
-   It holds no settings of its own: font and colours are changed on the size or theme profile it points to, which stay rewritable and synced. `Tags: []` keeps it out of the monitor submenus it would otherwise inherit.
+   `$guid` is looked up from the chosen profile's file (`include` + `fromJson` on `linked/iterm2/DynamicProfiles/*.json`), so the GUID isn't repeated in the template. It holds no settings of its own: font and colours are changed on the size or theme profile it points to, which stay rewritable and synced. `Tags: []` keeps it out of the monitor submenus it would otherwise inherit.
 
-3. **Shared plist:** `Default Bookmark Guid` → `B45E0000-0000-4000-8000-000000000002`.
+3. **Shared plist:** `Default Bookmark Guid` → `B45E0000-0000-4000-8000-000000000002`, and `New Bookmarks` holds only `iTerm defaults` (`B45E0000-0000-4000-8000-000000000000`: name, GUID, tag `base`).
 
 ### Files
 
@@ -112,22 +118,33 @@ private_Library/Application Support/iTerm2/exact_DynamicProfiles/
 ### Tests
 
 - Host, `test/host/45-iterm.sh` rewritten for the new shape:
+  - the plist's only regular profile is `iTerm defaults` with its fixed GUID; `Base`'s parent is it;
+  - every dynamic profile sets both parent keys, and the GUID belongs to the profile the name names, loaded earlier;
   - theme profiles: parent `Base`, `Use Separate Colors for Light and Dark Mode` true, both `(Light)` and `(Dark)` colour sets;
-  - size profiles: parent is a theme in the same file, `Normal Font` set, no colour keys (colours only come from the theme);
+  - size profiles: parent is a theme in the same file, `Normal Font` set, no `… Color` keys (colours only come from the theme; iTerm adds `Use Separate Colors…` on a rewrite, which is allowed);
   - every monitor tag (`retina`, `2k`, `4k`, `studio-display`) has exactly two sizes per theme;
   - no profile sets `Initial Text`;
-  - the plist's `Default Bookmark Guid` is the `Default` GUID;
-  - the `defaultProfile` choice list in `.chezmoi.toml.tmpl` is exactly the size profiles in `linked/iterm2/DynamicProfiles/`, and `zz-default.json` rendered for both profiles names one of them (a rename would otherwise silently fall back to `Base`).
+  - the plist's `Default Bookmark Guid` is the `This Mac` GUID;
+  - the `defaultProfile` choice list in `.chezmoi.toml.tmpl` is exactly the size profiles in `linked/iterm2/DynamicProfiles/`, and `zz-default.json` rendered for both profiles names one of them (a rename would otherwise make iTerm fall back to the default profile as parent, with an error dialog).
 - `test/expected/{personal,work}/config.toml` and `managed.txt` snapshots updated.
 - VM guided step: default profile has the expected size (11 personal, 16 work); switching macOS to light mode changes the colours of an open window.
 
-## To verify (in a VM, not on this Mac's live iTerm)
+## Verified (2026-10-16, Tart VM, Sequoia 15.7.7, iTerm 3.7.5)
 
-- A dynamic profile whose parent is itself a dynamic child resolves through both levels (`Default` → `Tokyonight 16` → `Tokyonight` → `Base`: three levels for `Default`).
-- Load order: files by name, profiles in file order (the `00-`/`zz-` prefixes and "parent first in the file" rely on it).
-- `"Tags": []` on a child overrides the parent's tags instead of inheriting them.
-- A rewrite from the UI on a size profile still writes only its overrides (ADR 0004), now that its parent is not `Base`. Also watch for the stripped-profile bug from task 32.
-- `(Light)`/`(Dark)` colour keys are inherited from a parent like the plain ones.
+Throwaway profiles shaped like the proposal (`Base` → `T` → `T 11`/`T 16`, plus the per-machine profile), read back over AppleScript: each profile opened in a window of a fixed pixel size, then its background colour and how many columns × rows fit (the font size).
+
+| Check | Result |
+|---|---|
+| Nested dynamic parents | Works: the per-machine profile → `T 16` → `T` → `Base` resolves every level's font and colours |
+| `(Light)`/`(Dark)` colours from a parent | Inherited; open windows switch live when macOS changes appearance |
+| Load order | Parents must load first (files by name, profiles in file order). Otherwise iTerm shows a "Dynamic profile error" dialog ("references unknown parent name … Using the default profile as parent") |
+| `"Tags": []` | Overrides the inherited tags: the per-machine profile shows at the top of the Profiles menu only |
+| Changing the per-machine profile's parent while iTerm runs | Picked up live and kept after a restart; the stored `Default Bookmark Guid` doesn't change |
+| Name `Default` | Clashes with the regular `Default` profile iTerm creates on first launch when its prefs have none |
+| `Base` without a parent | **Broken.** After any reload while iTerm runs (editing any profile file), `Base` took the default profile's settings, parent included (`Base` → `T 16`), and every profile under it inherited them. A dynamic profile with no parent inherits from the default profile, and here the default is a descendant of `Base`. Fixed by giving `Base` a regular parent (`iTerm defaults` in the plist): clean through live edits and restarts |
+| UI edit of a size profile (ADR 0004 rewrite) | With only `Dynamic Profile Parent Name` set, the rewrite copied the theme's colours and `Base`'s `Columns` into `T 16` and set its parent GUID to `Base`'s parent. With both parent keys on every profile, it wrote only the font (+ `Use Separate Colors…`); the other files were untouched |
+
+**Today's setup has the parentless `Base` too**, with the default (`Tokyonight (Night) - 4k small`) as its child: likely the cause of task 32's stripped profile. On this Mac it never showed: the stored default here is iTerm's own regular `Default`, not the repo's.
 
 ## Options considered
 
