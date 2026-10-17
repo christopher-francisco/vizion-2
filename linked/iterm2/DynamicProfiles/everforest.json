@@ -8,8 +8,8 @@
       "Tags": [
         "base"
       ],
-      "Normal Font": "MesloLGSDZNFM-Regular 13",
-      "Vertical Spacing": 1.75,
+      "Normal Font": "IntoneMonoNF 13",
+      "Vertical Spacing": 1.5,
       "Use Separate Colors for Light and Dark Mode": true,
       "Use Tab Color": true,
       "Ansi 0 Color (Dark)": {
@@ -390,8 +390,8 @@
       "Guid": "B45E0000-0000-4000-8000-000000000021",
       "Dynamic Profile Parent Name": "Everforest",
       "Dynamic Profile Parent GUID": "B45E0000-0000-4000-8000-000000000020",
-      "Normal Font": "MesloLGSDZNFM-Regular 11",
-      "Vertical Spacing": 1.75,
+      "Normal Font": "IntoneMonoNF 11",
+      "Vertical Spacing": 1.5,
       "Tags": [
         "everforest",
         "4k"
@@ -403,8 +403,8 @@
       "Guid": "BB0401D7-71F9-4EC3-9266-E816B0F9B9FD",
       "Dynamic Profile Parent Name": "Everforest",
       "Dynamic Profile Parent GUID": "B45E0000-0000-4000-8000-000000000020",
-      "Normal Font": "MesloLGSDZNFM-Regular 13",
-      "Vertical Spacing": 1.75,
+      "Normal Font": "IntoneMonoNF 13",
+      "Vertical Spacing": 1.5,
       "Tags": [
         "everforest",
         "retina",
@@ -417,8 +417,8 @@
       "Guid": "B45E0000-0000-4000-8000-000000000025",
       "Dynamic Profile Parent Name": "Everforest",
       "Dynamic Profile Parent GUID": "B45E0000-0000-4000-8000-000000000020",
-      "Normal Font": "MesloLGSDZNFM-Regular 13",
-      "Vertical Spacing": 1.55,
+      "Normal Font": "IntoneMonoNF 13",
+      "Vertical Spacing": 1.33,
       "Tags": [
         "everforest",
         "2k"
@@ -430,8 +430,8 @@
       "Guid": "32969AFA-8A23-44FA-BB2F-50BEAB2F9B90",
       "Dynamic Profile Parent Name": "Everforest",
       "Dynamic Profile Parent GUID": "B45E0000-0000-4000-8000-000000000020",
-      "Normal Font": "MesloLGSDZNFM-Regular 16",
-      "Vertical Spacing": 1.9,
+      "Normal Font": "IntoneMonoNF 16",
+      "Vertical Spacing": 1.7,
       "Tags": [
         "everforest",
         "4k"
@@ -443,8 +443,8 @@
       "Guid": "B45E0000-0000-4000-8000-000000000026",
       "Dynamic Profile Parent Name": "Everforest",
       "Dynamic Profile Parent GUID": "B45E0000-0000-4000-8000-000000000020",
-      "Normal Font": "MesloLGSDZNFM-Regular 16",
-      "Vertical Spacing": 1.7,
+      "Normal Font": "IntoneMonoNF 16",
+      "Vertical Spacing": 1.5,
       "Tags": [
         "everforest",
         "retina",
@@ -457,8 +457,8 @@
       "Guid": "B45E0000-0000-4000-8000-000000000024",
       "Dynamic Profile Parent Name": "Everforest",
       "Dynamic Profile Parent GUID": "B45E0000-0000-4000-8000-000000000020",
-      "Normal Font": "MesloLGSDZNFM-Regular 20",
-      "Vertical Spacing": 1.9,
+      "Normal Font": "IntoneMonoNF 20",
+      "Vertical Spacing": 1.7,
       "Tags": [
         "everforest",
         "2k"
