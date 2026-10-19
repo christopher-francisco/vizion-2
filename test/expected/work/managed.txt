@@ -11,6 +11,8 @@
 .config/git
 .config/git/ignore
 .config/karabiner
+.config/neovide
+.config/neovide/config.toml
 .config/nvim
 .config/nvim-legacy
 .config/nvim-legacy/init.lua
@@ -59,6 +61,7 @@
 .config/nvim/lua/config/follow_terminal.lua
 .config/nvim/lua/config/keymaps.lua
 .config/nvim/lua/config/lazy.lua
+.config/nvim/lua/config/neovide.lua
 .config/nvim/lua/config/options.lua
 .config/nvim/lua/config/status_colours.lua
 .config/nvim/lua/config/theme.lua

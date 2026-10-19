@@ -122,8 +122,9 @@ local function outside_tmux()
 end
 
 function M.setup()
-  -- `nvim --headless` (chezmoi's plugin sync, scripts) has no window to colour.
-  if vim.list_contains(vim.v.argv, "--headless") then
+  -- `nvim --headless` (chezmoi's plugin sync, scripts) has no window to colour. Neovide and VS Code
+  -- have no terminal to ask: Neovide sets light/dark from macOS, VS Code draws its own theme.
+  if vim.list_contains(vim.v.argv, "--headless") or vim.g.neovide or vim.g.vscode then
     return
   end
   if vim.env.TMUX then

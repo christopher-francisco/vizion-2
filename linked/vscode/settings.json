@@ -30,4 +30,8 @@
     "workbench.layoutControl.enabled": false,
     "vsicons.presets.jsOfficial": true,
     "explorer.confirmDelete": false,
+    "vscode-neovim.neovimExecutablePaths.darwin": "/opt/homebrew/bin/nvim",
+    "extensions.experimental.affinity": {
+        "asvetliakov.vscode-neovim": 1
+    },
 }

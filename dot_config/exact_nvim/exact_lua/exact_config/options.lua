@@ -15,3 +15,8 @@ vim.opt.wildmode = "longest,full"
 
 -- Colour scheme and light/dark from the terminal window (config/follow_terminal.lua)
 require("config.follow_terminal").setup()
+
+-- Neovide: GUI settings and scratch windows (config/neovide.lua)
+if vim.g.neovide then
+  require("config.neovide").setup()
+end

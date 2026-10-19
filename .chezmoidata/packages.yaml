@@ -8,10 +8,11 @@ packages:
   dev:
     brews: [asdf, shellcheck]
   gui:
-    casks: [iterm2, visual-studio-code, karabiner-elements, the-unarchiver,
+    casks: [iterm2, visual-studio-code, neovide-app, karabiner-elements, the-unarchiver,
             font-intone-mono-nerd-font, font-meslo-lg-nerd-font, font-fira-code-nerd-font]
     vscode:      # extension IDs, installed by run_onchange_after_25-vscode-extensions; `code --list-extensions` prints them
       - astro-build.astro-vscode
+      - asvetliakov.vscode-neovim
       - dbaeumer.vscode-eslint
       - editorconfig.editorconfig
       - esbenp.prettier-vscode

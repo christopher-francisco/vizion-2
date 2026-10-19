@@ -1,0 +1,5 @@
+# Neovide (the Neovim GUI). The rest of its settings live in the Neovim config (lua/config/neovide.lua).
+# docs/requirements/0.6.0_GUI_EDITORS.md
+
+# `neovide <file>` from a shell returns at once instead of holding the terminal
+fork = true

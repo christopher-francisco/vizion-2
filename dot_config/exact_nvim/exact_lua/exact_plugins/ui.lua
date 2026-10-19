@@ -22,11 +22,12 @@ return {
   -- main: lazy.nvim can't tell the module from the repo name, and without it opts never reach setup()
   { "neanias/everforest-nvim", main = "everforest", lazy = true, opts = { background = "soft", italics = true } },
 
-  -- Dashboard: custom Vizion logo via snacks.nvim
+  -- Dashboard: custom Vizion logo via snacks.nvim. Not in a Neovide scratch window (config/neovide.lua)
   {
     "snacks.nvim",
     opts = {
       dashboard = {
+        enabled = not require("config.neovide").is_scratch(),
         preset = {
           header = string.rep("\n", 2)
             .. [[
