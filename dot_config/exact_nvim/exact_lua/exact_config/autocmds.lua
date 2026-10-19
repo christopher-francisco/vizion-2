@@ -45,3 +45,16 @@ autocmd("LspAttach", {
 vim.api.nvim_create_user_command("CEdit", function(args)
   vim.cmd("vsp ~/.config/nvim/lua/chris/" .. args.args .. ".lua")
 end, { nargs = 1 })
+
+-- Godot projects: listen on <project>/.godot/nvim.sock so Godot's external editor can open
+-- scripts here (the first Neovim started in the project wins; see README "Godot")
+local godot_root = vim.fs.root(vim.fn.getcwd(), "project.godot")
+if godot_root then
+  local sock = godot_root .. "/.godot/nvim.sock"
+  if #sock > 103 then -- macOS socket paths: 104 bytes with the terminating NUL
+    vim.notify("Godot: project path too long for " .. sock, vim.log.levels.WARN)
+  else
+    vim.fn.mkdir(godot_root .. "/.godot", "p")
+    pcall(vim.fn.serverstart, sock)
+  end
+end

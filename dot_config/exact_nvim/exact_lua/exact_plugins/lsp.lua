@@ -22,6 +22,8 @@ return {
         },
         cssls = {},
         cssmodules_ls = {},
+        -- Godot: the editor is the server (port 6005), connect only while it is open
+        gdscript = { mason = false },
       },
     },
   },
