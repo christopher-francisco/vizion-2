@@ -35,9 +35,10 @@ set -g mouse on
 # Stops tmux for waiting too long on the Escape key
 set -s escape-time 10
 
-# We want tmux to support 256 colors and allow itallics
+# Inside tmux: 256 colours and italics (macOS's tmux-256color has them). Tc tells tmux the outer
+# terminal (iTerm, xterm-256color) does true colour, which its terminfo entry doesn't say
 set -g default-terminal 'tmux-256color'
-set -as terminal-overrides ',xterm*:Tc:sitm=\E[3m'
+set -as terminal-overrides ',xterm*:Tc'
 
 set -g monitor-bell off
 set -g status-interval 1

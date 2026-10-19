@@ -45,7 +45,7 @@ To change an answer later: `chezmoi init --prompt`, then `chezmoi apply`.
 3. The dotfiles, plus oh-my-zsh and TPM (`.chezmoiexternal.toml`).
 4. `20-runtimes`: asdf plugins and runtimes from `~/.tool-versions`.
 5. `25-vscode-extensions`: the VS Code extensions in `packages.yaml`.
-6. `30-macos`: terminfo entries, iTerm2's settings folder, `defaults write` settings (`.chezmoidata/macos.yaml`).
+6. `30-macos`: iTerm2's settings folder, `defaults write` settings (`.chezmoidata/macos.yaml`).
 7. `40-plugins`: tmux plugins, Neovim plugins for both configs (from their `lazy-lock.json`), LazyVim's Mason tools.
 8. `50-gh-auth`: `gh auth login` in the browser for each GitHub host without a stored login. Runs on every apply, so a skipped or failed login is offered again (on a terminal; otherwise it prints the command). A logged-in machine sees no output.
 9. `55-work-push-token` (work only): if the token for pushing this repo isn't in the Keychain yet, prints how to create it and waits; press Enter to paste and store it, or `s` to skip. Offered on every apply until stored (see [Work laptop](#work-laptop)).
@@ -123,7 +123,7 @@ macOS uses Ctrl+Space to switch input sources. Disable it in System Settings →
 
 > `can't find terminal definition for xterm-256color-italic`
 
-The terminfo entries aren't compiled yet. Run `chezmoi apply`, or `tic -x linked/iterm2/terminfo/*.terminfo` from `chezmoi cd`.
+A session opened before task 41's change still has the old custom `TERM`. Open a new iTerm tab (or restart iTerm) after `chezmoi apply`; new shells get `xterm-256color` from iTerm and `tmux-256color` inside tmux. The old compiled entries in `~/.terminfo` are no longer used and can be deleted: `rm -rf ~/.terminfo`.
 
 > `linked/iterm2/com.googlecode.iterm2.plist` has thousands of lines of profiles
 

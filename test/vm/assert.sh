@@ -76,8 +76,10 @@ unavailable=$(sed -n 's/^unavailable: //p' <<< "$ts" | tr '\n' ' ')
 [ -z "$unavailable" ] || echo "# treesitter: requested by LazyVim but not in nvim-treesitter: $unavailable"
 
 # --- macOS settings and GUI apps
-check "terminfo: xterm-256color-italic" infocmp -x xterm-256color-italic
-check "terminfo: tmux-256color" infocmp -x tmux-256color
+# macOS's own entries must have italics (ADR 0009: no custom terminfo)
+for t in xterm-256color tmux-256color; do
+  check "terminfo: $t has italics" sh -c "infocmp -x $t | grep -q 'sitm='"
+done
 if [ "$(data '{{ .groups.gui }}')" = true ]; then
   folder=$(defaults read com.googlecode.iterm2 PrefsCustomFolder 2>&1)
   if [ "$folder" = "$src/linked/iterm2" ] && [ "$(defaults read com.googlecode.iterm2 LoadPrefsFromCustomFolder 2>&1)" = 1 ]; then

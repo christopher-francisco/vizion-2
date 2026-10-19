@@ -1,1 +1,1 @@
-export TERM="xterm-256color"
+# Don't set TERM here: iTerm sets it (xterm-256color) and tmux sets tmux-256color in its panes (ADR 0009)
