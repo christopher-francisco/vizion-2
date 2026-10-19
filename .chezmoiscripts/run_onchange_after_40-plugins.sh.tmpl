@@ -43,6 +43,12 @@ restore_nvim() {
 restore_nvim nvim
 restore_nvim nvim-legacy
 
+# markdown-preview.nvim's build downloads its prebuilt server in a terminal job, which the headless
+# restore quits before it's done. Without it, the preview falls back to node and fails (no tslib).
+# Download it and wait; this returns at once when the binary already matches the plugin's version.
+nvim --headless "+lua require('lazy').load({ plugins = { 'markdown-preview.nvim' } })" \
+  "+call mkdp#util#install_sync(v:true)" +qa
+
 ts_install=$(mktemp -t ts-install)
 mason_install=$(mktemp -t mason-install)
 trap 'rm -f "$ts_install" "$mason_install"' EXIT

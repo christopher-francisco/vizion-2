@@ -75,6 +75,9 @@ missing "treesitter: every available ensure_installed parser installed" "$(grep 
 unavailable=$(sed -n 's/^unavailable: //p' <<< "$ts" | tr '\n' ' ')
 [ -z "$unavailable" ] || echo "# treesitter: requested by LazyVim but not in nvim-treesitter: $unavailable"
 
+check "markdown-preview: prebuilt server downloaded and runs" \
+  "$HOME/.local/share/nvim/lazy/markdown-preview.nvim/app/bin/markdown-preview-macos-arm64" --version
+
 # --- macOS settings and GUI apps
 # macOS's own entries must have italics (ADR 0009: no custom terminfo)
 for t in xterm-256color tmux-256color; do
