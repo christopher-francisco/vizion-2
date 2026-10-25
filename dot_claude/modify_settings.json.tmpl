@@ -1,0 +1,16 @@
+#!/bin/sh
+# Claude Code's settings stay the machine's own (Claude Code and /config write them); chezmoi only sets
+# the theme and adds the hooks that keep it following the iTerm window, once each.
+# docs/requirements/0.8.0_CLAUDE_CODE_THEME.md
+# stdin: the current file (empty when there's none); stdout: the new one. Without jq, or if the file
+# isn't JSON, it's left as it is.
+in=$(cat) json=${in:-'{}'}
+if command -v jq >/dev/null && out=$(printf '%s' "$json" | jq --arg cmd {{ joinPath .chezmoi.homeDir ".claude/vizion/theme.sh" | squote }} '
+  .theme = "custom:vizion"
+  | reduce ("SessionStart", "UserPromptSubmit") as $event (.;
+      if [.hooks[$event][]?.hooks[]?.command] | index($cmd) then .
+      else .hooks[$event] += [{hooks: [{type: "command", command: $cmd}]}] end)' 2>/dev/null); then
+  printf '%s\n' "$out"
+else
+  [ -n "$in" ] && printf '%s\n' "$in"
+fi

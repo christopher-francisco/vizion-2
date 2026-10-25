@@ -1,0 +1,4 @@
+{{- /* Claude Code's theme (`custom:vizion`). Created once with the machine's scheme; from then on
+~/.claude/vizion/theme.sh rewrites it to follow the iTerm window, so chezmoi never overwrites it.
+docs/requirements/0.8.0_CLAUDE_CODE_THEME.md */ -}}
+{{ include (printf "dot_claude/vizion/themes/%s-dark.json" .theme) -}}

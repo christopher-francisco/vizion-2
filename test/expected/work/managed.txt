@@ -7,6 +7,17 @@
 .chezmoiscripts/40-plugins.sh
 .chezmoiscripts/50-gh-auth.sh
 .chezmoiscripts/55-work-push-token.sh
+.claude
+.claude/settings.json
+.claude/themes
+.claude/themes/vizion.json
+.claude/vizion
+.claude/vizion/theme.sh
+.claude/vizion/themes
+.claude/vizion/themes/everforest-dark.json
+.claude/vizion/themes/everforest-light.json
+.claude/vizion/themes/tokyonight-dark.json
+.claude/vizion/themes/tokyonight-light.json
 .config
 .config/git
 .config/git/ignore

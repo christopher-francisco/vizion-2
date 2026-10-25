@@ -1,0 +1,34 @@
+#!/bin/sh
+# Claude Code's colours follow the iTerm window in use, like tmux and Neovim.
+# docs/requirements/0.8.0_CLAUDE_CODE_THEME.md
+# Claude Code loads the custom theme ~/.claude/themes/vizion.json (`"theme": "custom:vizion"` in
+# ~/.claude/settings.json) and reloads it in every running session when the file changes. This copies
+# the palette for a scheme and light/dark (~/.claude/vizion/themes/<scheme>-<dark|light>.json) over it.
+# Usage: theme.sh [<scheme> <dark|light>]
+#   with arguments   from tmux's theme hook (~/.config/tmux/theme.sh): the window in use's
+#   without          from Claude Code's SessionStart and UserPromptSubmit hooks: inside tmux, tmux's
+#                    choice (@theme); outside, the window's iTerm profile and the macOS appearance
+# Never fails and prints nothing: a UserPromptSubmit hook's output would reach the conversation.
+# Rendered by chezmoi: the profile → scheme table comes from the iTerm profiles. Edit with `chezmoi edit`.
+if [ $# -eq 2 ]; then
+  theme=$1-$2
+elif [ -n "${TMUX-}" ] && theme=$(tmux show -gv @theme 2>/dev/null) && [ -n "$theme" ]; then
+  :
+else
+  case ${ITERM_PROFILE-} in
+{{- range $name, $scheme := (includeTemplate "colour-schemes.json" . | fromJson).profiles }}
+    {{ $name | squote }}) scheme={{ $scheme }} ;;
+{{- end }}
+    *) scheme={{ .theme }} ;; # This Mac (the machine's scheme), another terminal
+  esac
+  # iTerm's light/dark follows the system's: AppleInterfaceStyle is Dark, or missing in light mode.
+  appearance=light
+  [ "$(defaults read -g AppleInterfaceStyle 2>/dev/null)" = Dark ] && appearance=dark
+  theme=$scheme-$appearance
+fi
+src=$HOME/.claude/vizion/themes/$theme.json dst=$HOME/.claude/themes/vizion.json
+[ -f "$src" ] || exit 0
+cmp -s "$src" "$dst" && exit 0 # unchanged: no reload
+# Replaced in one rename, so Claude Code never reads a half-written file.
+mkdir -p "${dst%/*}" && cp "$src" "$dst.tmp" && mv -f "$dst.tmp" "$dst"
+exit 0

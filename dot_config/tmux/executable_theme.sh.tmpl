@@ -8,7 +8,7 @@
 #   appearance   a window's light/dark changed (or became known, after attaching): apply if it's active
 # Applying sources themes/<scheme>-<dark|light>.tmux.conf (once per change), records it in @theme
 # (`tmux show -gv @theme`) and tells every Neovim inside tmux (their servers are in the @nvim_server
-# pane option; config/follow_terminal.lua).
+# pane option; config/follow_terminal.lua) and Claude Code (~/.claude/vizion/theme.sh).
 # Rendered by chezmoi: the profile → scheme table comes from the iTerm profiles. Edit with `chezmoi edit`.
 event=$1 client=$2
 key=$(printf '%s' "$client" | tr -c 'a-zA-Z0-9' _) # option names: no slashes
@@ -33,6 +33,9 @@ case $(tmux show -sv "@iterm_profile_$key" 2>/dev/null) in
 {{- end }}
   *) scheme={{ .theme }} ;; # This Mac (the machine's scheme), another terminal
 esac
+# Claude Code too, before the check below: a Claude outside tmux may have taken it over since
+# (docs/requirements/0.8.0_CLAUDE_CODE_THEME.md). Cheap when it's already right.
+[ -x "$HOME/.claude/vizion/theme.sh" ] && "$HOME/.claude/vizion/theme.sh" "$scheme" "$appearance"
 [ "$(tmux show -gv @theme 2>/dev/null)" = "$scheme-$appearance" ] && exit 0
 tmux source-file "$HOME/.config/tmux/themes/$scheme-$appearance.tmux.conf"
 tmux set -g @theme "$scheme-$appearance"
