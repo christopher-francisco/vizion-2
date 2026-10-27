@@ -14,11 +14,35 @@ return {
         html = { "prettierd" },
         json = { "prettierd" },
         yaml = { "prettierd" },
-        markdown = { "prettierd" },
+        -- keep the lang.markdown extra's fixers; lists replace rather than merge
+        markdown = { "prettierd", "markdownlint-cli2", "markdown-toc" },
         graphql = { "prettierd" },
       },
     },
     -- <leader>cf is already provided by LazyVim via LazyVim.format()
+  },
+
+  -- render-markdown: the lang.markdown extra sets heading.icons = {}, which
+  -- leaves the raw # showing; restore the plugin's icons and nvim-legacy's setting
+  {
+    "MeanderingProgrammer/render-markdown.nvim",
+    opts = {
+      anti_conceal = { enabled = false },
+      heading = {
+        icons = { "󰲡 ", "󰲣 ", "󰲥 ", "󰲧 ", "󰲩 ", "󰲫 " },
+      },
+    },
+  },
+
+  -- blink.cmp: like nvim-legacy's nvim-cmp, select nothing until <C-n>/<C-p>,
+  -- insert the selection as you move, and let <CR> fall through when nothing is selected
+  {
+    "saghen/blink.cmp",
+    opts = {
+      completion = {
+        list = { selection = { preselect = false, auto_insert = true } },
+      },
+    },
   },
 
   -- LuaSnip: restore jump keymaps (friendly-snippets loaded by extra)
